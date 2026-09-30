@@ -103,8 +103,8 @@ h3{font-size:22px;font-weight:800;margin:0 0 10px}
 /* week */
 .day{display:grid;grid-template-columns:100px 1fr;background:var(--card);border:1px solid var(--line);margin-bottom:12px}
 .db{padding:14px 8px;text-align:center;background:#F6F6F6;border-right:1px solid var(--line)}
-.db b{display:block;font-size:38px;line-height:1.1;font-weight:800}
-.db span{font-size:19px;font-weight:700;color:var(--muted)}
+.db b{display:block;font-size:38px;line-height:1.15;font-weight:800;margin-bottom:2px}
+.db span{display:block;font-size:19px;font-weight:700;color:var(--muted);line-height:1.3}
 .db em{display:block;font-style:normal;font-size:15px;font-weight:800;color:#fff;background:var(--green);border-radius:4px;margin:6px 10px 0}
 .day.today{border:3px solid var(--ink)}
 .day.off .db{background:#FAFAFA}
@@ -176,8 +176,8 @@ h3{font-size:22px;font-weight:800;margin:0 0 10px}
 .fold>summary svg{width:30px;height:30px;color:var(--muted);flex-shrink:0}
 .fold>summary .n{font-size:17px;font-weight:700;color:var(--muted);margin-left:auto}
 .arow{display:grid;grid-template-columns:100px 1fr;gap:12px;padding:12px 20px 4px;border-top:1px solid var(--line)}
-.adc{font-size:26px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.2}
-.adc small{display:block;font-size:16px;font-weight:600}
+.adc{font-size:26px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.15}
+.adc small{display:block;font-size:16px;font-weight:600;line-height:1.4;margin-top:4px}
 
 /* ── v2 추가 ── */
 body{word-break:keep-all;overflow-wrap:break-word}
@@ -215,7 +215,7 @@ input,select{font-size:16px}
 .pc{padding:6px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);min-height:72px;position:relative}
 .pc.pst{background:#F0F0F0}
 .pc.busy{background:#F4F4F4}
-.bz{position:absolute;top:2px;right:5px;font-size:15px;font-weight:800;color:var(--red)}
+.bz{display:block;text-align:right;font-size:15px;font-weight:800;color:var(--red);line-height:1.2;margin:-2px 0 3px}
 .pmi{font-size:15px;font-weight:700;line-height:1.3;padding:3px 6px;margin-bottom:4px;border-left:5px solid var(--c);background:#F0F0F0}
 .pmi.tent{border-left-style:dashed}
 .pmi b{color:#111111}
@@ -396,14 +396,16 @@ table.ed input::placeholder{color:#C4C4C4;font-weight:400}
 /* 담당자 바 */
 .whobar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:12px 0 0}
 .wlab{font-size:15px;font-weight:800;color:var(--muted);margin-right:4px}
-.who{font-size:16px;font-weight:700;padding:6px 14px;border:2px solid var(--line);border-radius:100px;background:#fff;color:var(--text)}
-.who small{font-size:15px;font-weight:600;color:var(--muted)}
-.who[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-.who[aria-pressed="true"] small{color:#ddd}
-.who.lead{border-style:dashed}
+.whob{font-size:16px;font-weight:700;padding:6px 14px;border:2px solid var(--line);border-radius:100px;background:#fff;color:var(--text)}
+.whob small{font-size:15px;font-weight:600;color:var(--muted)}
+.whob[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.whob[aria-pressed="true"] small{color:#ddd}
+.whob.lead{border-style:dashed}
+/* 주간 칸 안 담당자 이름 — 글자만 굵게 */
+.wi .mt .who{font-weight:800;color:var(--text);background:none;border:0;padding:0}
 .wnote{font-size:15px;color:var(--muted);margin-left:6px}
 body.fit .whobar{padding:8px 0 0}
-body.fit .who{padding:4px 12px}
+body.fit .whob{padding:4px 12px}
 /* 읽기용 목록 */
 table.ro td{padding:9px 8px}
 table.ro tr.clik{cursor:pointer}
@@ -455,8 +457,11 @@ body.fit #q2{padding:7px 13px;font-size:16px}
 .addhere{display:block;width:100%;margin-top:6px;font-size:15px;font-weight:700;color:var(--muted);background:none;border:2px dashed var(--line);border-radius:6px;padding:7px}
 .addhere:hover{border-color:var(--ink);color:var(--ink)}
 .mc,.pc{position:relative}
-.addcell{position:absolute;right:3px;bottom:3px;width:26px;height:26px;font-size:17px;font-weight:800;line-height:1;color:var(--muted);background:#fff;border:2px solid var(--line);border-radius:6px;opacity:0}
-.mc:hover .addcell,.pc:hover .addcell,.addcell:focus{opacity:1}
+.addcell{position:absolute;right:3px;bottom:3px;width:26px;height:26px;font-size:17px;font-weight:800;line-height:1;color:var(--muted);background:#fff;border:2px solid var(--line);border-radius:6px;opacity:0;pointer-events:none}
+/* 월간: 날짜 숫자 줄 오른쪽 빈자리로 — 제목 글자와 안 겹침 */
+.mc .addcell{top:3px;bottom:auto;width:24px;height:24px;font-size:16px}
+.addcell{z-index:3}
+.mc:hover .addcell,.pc:hover .addcell,.addcell:focus{opacity:1;pointer-events:auto}
 .addcell:hover{border-color:var(--ink);color:var(--ink)}
 /* 설정 */
 .setrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 0;border-top:1px solid var(--line);font-size:17px}
@@ -2198,9 +2203,9 @@ function applyPerson(){
 }
 function renderWhoBar(){
   var h='<span class="wlab">보기</span>';
-  h+='<button class="who" data-a="me" data-v="" aria-pressed="'+(ME==='')+'">전체</button>';
+  h+='<button class="whob" data-a="me" data-v="" aria-pressed="'+(ME==='')+'">전체</button>';
   MEMBERS.forEach(function(n){
-    h+='<button class="who'+(n===LEADER?' lead':'')+'" data-a="me" data-v="'+esc(n)+'" aria-pressed="'+(ME===n)+'">'+esc(n)+(n===LEADER?' <small>팀장</small>':'')+'</button>';
+    h+='<button class="whob'+(n===LEADER?' lead':'')+'" data-a="me" data-v="'+esc(n)+'" aria-pressed="'+(ME===n)+'">'+esc(n)+(n===LEADER?' <small>팀장</small>':'')+'</button>';
   });
   if(ME&&!meIsLeader())h+='<span class="wnote">'+esc(ME)+' 담당 일정만 보고 있어요</span>';
   if(meIsLeader())h+='<span class="wnote">전체 + 관리 체크</span>';
