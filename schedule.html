@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>1-3팀 운영 스케줄</title>
+<title>팀 이채윤 대쉬보드</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- 접속 정보는 config.js 에만 있습니다. 이 파일은 그대로 덮어써도 됩니다. -->
 <script src="config.js"></script>
@@ -463,7 +463,7 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
   <div class="wrap">
     <div class="hrow">
       <div>
-        <div class="kicker">사업전략파트 1-3팀 · 운영 스케줄</div>
+        <div class="kicker">팀 이채윤 대쉬보드</div>
         <div class="today" id="todayLine"></div>
       </div>
       <div class="hd2"><button class="ftoggle" id="fitBtn" aria-pressed="true">한 화면</button><div class="hint" id="hint"></div></div>
@@ -998,7 +998,9 @@ function dayItems(dt){
     if(r.days.indexOf(dt.getDay())>-1&&(!r.from||s>=r.from)&&(!r.to||s<=r.to)&&ok(r.p)){
       var ov=SHARED[rhythmId(r,s)];
       if(ov&&ov.hidden)return;
-      out.push(rhythmOcc(r,s));
+      var occ=rhythmOcc(r,s);
+      if(SKIP[s+'|'+r.p+'|'+occ.t]||SKIP[s+'|'+r.p+'|'+r.t])return;
+      out.push(occ);
     }
   });
   out.forEach(function(o){if(o._id)IDX[o._id]=o});
@@ -1348,6 +1350,7 @@ document.addEventListener('click',function(ev){
   else if(a==='tnext'){TALL=false;TFROM=TFROM+1}
   else if(a==='tnow'){TALL=false;TFROM=0}
   else if(a==='tall')TALL=true;
+  else if(a==='tdl'){dlText('운영스케줄_전체.csv',toCSV(allRows()));return}
   else if(a==='trowadd'){openNew();return}
   else if(a==='trowdel'){var tr0=t.closest('[data-row]');if(tr0)tableDel(tr0);return}
   else if(a==='qsel')qSel=+v;
@@ -1521,9 +1524,11 @@ async function saveEdit(){
 }
 async function delEdit(){
   if(sbReady()){
-    var rid=EDIT.e&&EDIT.e._id;
+    var rid=EDIT.e&&EDIT.e._id, e0=EDIT.e;
     if(String(rid||'').indexOf('r-')===0){
-      setMsg('이건 매주 반복 일정의 한 회차예요. 반복 자체를 없애려면 「전체 목록」에서 원본 줄을 삭제해 주세요.',true);
+      /* 반복의 한 회차 → 그 날짜만 제외 행으로 기록 */
+      var okSkip=await sbInsert({d:e0.d,t:e0.t,p:e0.p,k:e0.k,time:'',who:'',n:''}, '제외');
+      if(okSkip){setMsg('이 날짜의 「'+e0.t+'」만 뺐어요. 다음 주 반복은 그대로예요.');EDIT=null;renderEdit()}
       return;
     }
     if(rid&&await sbDelete(rid)){setMsg('삭제했어요. 팀 전체에 반영됩니다.');EDIT=null;renderEdit()}
@@ -1724,8 +1729,13 @@ var SB=null, SBSTATE='off', SBROWS=[], SBERR='';
 function sbReady(){return !!SB}
 
 /* DB 행 → 화면 데이터 묶음 */
+var SKIP={};
 function rowsToData(rows){
   var d={EVENTS:[],RANGES:[],RHYTHM:[],WEEKLY_ANY:[],MONTHLY:[],UNDATED:[],ROLES:[]};
+  SKIP={};
+  (rows||[]).forEach(function(r){
+    if((r.kind||'')==='제외'&&r.d&&r.t)SKIP[r.d+'|'+r.p+'|'+r.t]=1;
+  });
   (rows||[]).forEach(function(r){
     var base={p:r.p||'team',t:r.t||''};
     if(r.who)base.who=r.who;
@@ -1733,6 +1743,7 @@ function rowsToData(rows){
     if(r.tent)base.tent=1;
     if(r.est)base.est=1;
     var kind=r.kind||'일정';
+    if(kind==='제외')return;
     if(kind==='일정'){
       if(!r.d||!r.t)return;
       var o=Object.assign({},base,{d:r.d,k:r.k||'team',_id:r.id});
@@ -1823,10 +1834,10 @@ function toRow(f,kind){
           who:f.who||null, note:f.n||null,
           tent:!!f.tent, est:!!f.est, flag:f.flag||null, imp:!!f.imp, num:null};
 }
-async function sbInsert(f){
+async function sbInsert(f,kind){
   if(!SB){setMsg('Supabase에 연결되지 않아 저장하지 못했어요.',true);return false}
   try{
-    var r=await SB.from('schedule').insert(toRow(f));
+    var r=await SB.from('schedule').insert(toRow(f,kind));
     if(r.error)throw r.error;
     await sbLoad();return true;
   }catch(e){setMsg(wErr(e),true);return false}
@@ -1848,8 +1859,10 @@ async function sbDelete(id){
     await sbLoad();return true;
   }catch(e){setMsg(wErr(e),true);return false}
 }
+function closeEdit(){EDIT=null;renderEdit()}
 function wErr(e){
   var m=(e&&e.message)||'';
+  if(/duplicate key|unique/i.test(m))return '같은 일정이 이미 있어요.';
   if(/row-level security|permission|not authorized|violates/i.test(m))
     return '쓰기 권한이 없어요. Supabase에서 RLS 정책을 확인해 주세요.';
   if(/Failed to fetch|NetworkError/i.test(m))
@@ -2129,7 +2142,7 @@ function renderTable(){
    +'<button class="nb" data-a="tnow"'+(TFROM===0&&!TALL?' disabled':'')+'>지금</button>'
    +'<button class="nb" data-a="tnext"'+(TALL?' disabled':'')+'>다음 ›</button></div></div>';
   h+='<div class="tbar"><button class="pb" data-a="trowadd">+ 줄 추가</button>'
-   +'<button class="pb sec2" data-i="dl">CSV로 내보내기</button>'
+   +'<button class="pb sec2" data-a="tdl">CSV로 내보내기</button>'
    +'<span class="tnote" style="margin:0">'+(sbReady()?'고치면 팀 전체에 즉시 반영돼요':'이 컴퓨터에만 저장돼요 · Supabase를 연결하면 팀 공유')+'</span></div>';
   h+='<div class="twrap"><table class="ed"><thead><tr>'
    +'<th style="width:140px">날짜</th><th style="width:86px">시각</th><th style="width:150px">프로젝트</th>'
