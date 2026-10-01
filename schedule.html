@@ -441,6 +441,15 @@ table.ro tr.clik:hover td{background:#F4F4F4}
 .ldbar i{display:block;height:100%;background:var(--ink);border-radius:7px}
 .ldv{font-weight:800;text-align:right;font-size:16px}
 @media (max-width:1100px){.ckgrid{grid-template-columns:1fr}}
+.fhint{font-size:15px;color:var(--green);font-weight:700;margin:-4px 0 8px 86px;min-height:0}
+.upopt{background:#F7F7F7;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px}
+.uprow{display:flex;gap:10px;align-items:flex-start;padding:4px 0}
+.uplab{font-size:15px;font-weight:800;color:var(--muted);min-width:62px;padding-top:6px}
+.upchips{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.upc{font-size:15px;font-weight:700;padding:5px 12px;border:2px solid var(--line);border-radius:100px;background:#fff;color:var(--text)}
+.upc[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.upc.pjc[aria-pressed="true"]{background:var(--c);border-color:var(--c)}
+.uptip{font-size:15px;color:var(--muted);margin-top:6px}
 /* 검색 */
 .searchbar{display:flex;gap:10px;align-items:center;padding:10px 0 0}
 #q2{flex:1;max-width:520px;font-size:17px;padding:9px 14px;border:2px solid var(--line);border-radius:100px;background:#fff;color:var(--text)}
@@ -564,6 +573,12 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
       <div class="upbox">
         <h3>내 일정 올리기</h3>
         <div class="upsub">형식 안 맞춰도 돼요. 그냥 적거나, 파일을 끌어놓고 버튼만 누르면 팀 전체 일정에 반영됩니다.</div>
+        <div class="upopt">
+          <div class="uprow"><span class="uplab">담당</span><div class="upchips" id="upWho"></div></div>
+          <div class="uprow"><span class="uplab">프로젝트</span><div class="upchips" id="upPj"></div></div>
+          <div class="uprow"><span class="uplab">종류</span><div class="upchips" id="upKind"></div></div>
+          <div class="uptip">고르면 글에 안 적힌 줄에만 채워져요. 글에 적힌 게 있으면 그게 우선이에요.</div>
+        </div>
         <label for="upText" class="vh">내 일정 입력</label>
         <textarea id="upText" placeholder="예)&#10;10/2 오후 3시 홍보영상 촬영 김성현&#10;내일 14시 김작가TV 촬영&#10;다음 주 목요일 이정윤 촬영 18:30"></textarea>
         <div class="updrop" id="upDrop">파일을 여기에 끌어놓기 (CSV · 메모 txt) &nbsp;또는&nbsp; <label class="pb sec2" for="upFile">파일 선택</label><input type="file" id="upFile" accept=".csv,.tsv,.txt" hidden><span id="upFileName"></span></div>
@@ -595,14 +610,6 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
       <div class="box"><h3>3. 시트(CSV) 불러오기</h3>
         <div class="drop" id="drop">CSV 파일을 여기에 끌어놓기 &nbsp;또는&nbsp; <label class="pb sec2" for="csvfile">파일 선택</label><input type="file" id="csvfile" accept=".csv,.tsv,.txt" hidden></div>
         <div class="note" style="margin-top:10px">구글 시트: 파일 → 다운로드 → 쉼표로 구분된 값(.csv). 시트에서 표를 복사해 위 「메모장 붙여넣기」에 붙여도 읽어요. 불러온 표는 화면 데이터 전체를 대체합니다.</div></div>
-
-      <div class="box"><h3>4. 자동 불러오기 (선택)</h3>
-        <div class="note" id="urlNote"></div>
-        <div class="msg bad" id="urlBlocked" hidden>공유 링크로 열었을 때는 외부 주소 불러오기가 차단돼요. 파일을 내려받아 열면 됩니다. 공유 링크에서는 위의 「CSV 불러오기」나 「메모장 붙여넣기」를 쓰세요.</div>
-        <label for="urlIn" class="vh">CSV 주소</label>
-        <input type="url" id="urlIn" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?output=csv">
-        <div class="row"><button class="pb" data-i="reload">지금 시트에서 다시 불러오기</button><button class="pb sec2" data-i="seturl">저장하고 불러오기</button><button class="pb sec2" data-i="clearurl">주소 지우기</button></div>
-        <div class="box2">이 화면은 열 때마다 시트를 자동으로 읽어요. 시트를 고친 뒤 이 버튼을 누르면 새로고침 없이 반영됩니다.</div></div>
 
       <div class="box"><h3>설정</h3>
         <div class="note">팀 전체에 공유돼요.</div>
@@ -804,21 +811,30 @@ var PROJECT_KEYS = [
           '인턴총회','총회']],
  ['team',['팀 공통','팀공통','팀 회의','팀회의','온보딩','ERRC','주간 회의','주간회의']]
 ];
-var KIND_KEYS = [['meet',['회의','미팅']],['deadline',['마감']],['launch',['론칭','오픈']],['live',['라이브']],['shoot',['촬영']],['promo',['문자','홍보','광고']],['pub',['발행','업로드','올리']],['event',['행사','총회','세미나']],['decide',['확정','결정']],['plan',['기획','분석','전략']]];
+var KIND_KEYS = [['meet',['회의','미팅']],['deadline',['마감']],['launch',['론칭','오픈']],['live',['라이브']],['shoot',['촬영']],['promo',['문자','홍보','광고']],['pub',['발행','업로드','올리','편집','썸네일']],['event',['행사','총회','세미나','전망','설명회','북토크','강연']],['decide',['확정','결정']],['plan',['기획','분석','전략']]];
 var TITLES=/(전무|대표|부사장|사장|이사|팀장|본부장|센터장|박사|위원|대리|과장|차장|부장|매니저|작가|쌤|선생|세무사|피디|PD)(님|넘)?/g;
 function stripTitles(x){return String(x||'').replace(TITLES,' ')}
+/* 입력 정리: 분해된 한글(NFD)→일반, 보이지 않는 공백 제거, 전각 숫자·기호→반각 */
+function clean(x){
+  x=String(x==null?'':x);
+  if(x.normalize)x=x.normalize('NFC');
+  x=x.replace(/[\u200B-\u200D\u2060\uFEFF]/g,'').replace(/[\u00A0\u2007\u202F\u3000]/g,' ');
+  x=x.replace(/[\uFF01-\uFF5E]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
+  x=x.replace(/[\u2010-\u2015\u2212]/g,'-').replace(/[\u301C\uFF5E]/g,'~');
+  return x;
+}
 function guess(map,s){
-  var a=String(s||''), b=stripTitles(a);
+  var a=clean(s), b=stripTitles(a);
   for(var i=0;i<map.length;i++){var ks=map[i][1];
     for(var j=0;j<ks.length;j++){if(a.indexOf(ks[j])>-1||b.indexOf(ks[j])>-1)return map[i][0]}}
   return null;
 }
-function pjKey(name){name=String(name||'').trim();if(!name)return null;for(var k in PJ){if(PJ[k]===name||k===name)return k}return guess(PROJECT_KEYS,name)}
-function kindKey(label){label=String(label||'').trim();if(!label)return '';for(var k in KIND){if(KIND[k]===label||k===label)return k}return guess(KIND_KEYS,label)||''}
+function pjKey(name){name=clean(name).trim();if(!name)return null;for(var k in PJ){if(PJ[k]===name||k===name)return k}return guess(PROJECT_KEYS,name)}
+function kindKey(label){label=clean(label).trim();if(!label)return '';for(var k in KIND){if(KIND[k]===label||k===label)return k}return guess(KIND_KEYS,label)||''}
 function truthy(v){return /^(1|true|y|yes|o|x|예|네)$/i.test(String(v==null?'':v).trim())}
-function normDate(s){var m=String(s||'').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);if(!m)return null;var d=new Date(+m[1],+m[2]-1,+m[3]);if(d.getMonth()!==+m[2]-1)return null;return iso(d)}
+function normDate(s){var m=clean(s).match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);if(!m)return null;var d=new Date(+m[1],+m[2]-1,+m[3]);if(d.getMonth()!==+m[2]-1)return null;return iso(d)}
 function normTime(s){
-  s=String(s||'').trim(); if(!s)return '';
+  s=clean(s).trim(); if(!s)return '';
   var m=s.match(/(오전|오후|아침|점심|낮|저녁|밤|새벽|AM|PM)?\s*(\d{1,2})\s*[:시]\s*(반|\d{1,2})?\s*분?/i);
   if(!m)return '';
   var h=+m[2], mi=0, ap=m[1]||'';
@@ -851,7 +867,7 @@ function setData(o){
 
 /* CSV/TSV → 2차원 배열 (따옴표·줄바꿈 처리, 구분자 자동 판별) */
 function parseTable(text){
-  text=String(text||'').replace(/^\uFEFF/,'');
+  text=clean(text);
   var first=text.split(/\r?\n/)[0]||'';
   var delim=(first.split('\t').length>first.split(',').length)?'\t':',';
   var rows=[],row=[],cur='',q=false,i,c;
@@ -967,8 +983,27 @@ function relDate(s){
   if(m){var idx=(WD.indexOf(m[2])+6)%7;return {d:iso(addDays(weekStart(m[1]==='다음'?1:0),idx)),tok:m[0]}}
   return null;
 }
-function parseLine(raw){
-  var s=String(raw).replace(/^\s*[-•*·]\s*/,'').replace(/^\d+[.)]\s+/,'').trim();
+/* 짧은 이름 → 정식 이름 (메모에서 '희연', '예랑'처럼만 써도 담당으로) */
+var SHORT_NAMES={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','예랑':'이예랑'};
+/* 제목에서 같은 일정인지 비교할 때 무시할 말 */
+var STOPW=['진행','예정','확인','준비','및','관련','사항','필요','정리','요청','운영','현장','지원','행사','회의','미팅','팀','공통','팀장님','w','등','의','건'];
+function coreTokens(t){
+  return clean(t).replace(/[()\[\]【】「」『』<>〈〉·,./:~\-–—+*&]/g,' ').split(/\s+/)
+    .map(function(x){return x.replace(/(을|를|이|가|은|는|에|의|로|으로|와|과|도)$/,'')})
+    .filter(function(x){return x.length>=2&&STOPW.indexOf(x)<0&&!/^\d+$/.test(x)&&!PJ_WORDS[x]});
+}
+var PJ_WORDS={};
+function sameItem(a,b){
+  if(a.d!==b.d||a.p!==b.p)return false;
+  var A=coreTokens(a.t),B=coreTokens(b.t);
+  if(!A.length||!B.length)return false;
+  var hit=A.filter(function(x){return B.some(function(y){return y.indexOf(x)>-1||x.indexOf(y)>-1})}).length;
+  return hit>=1&&hit>=Math.min(A.length,B.length)*0.5;
+}
+
+function parseLine(raw,ctx){
+  ctx=ctx||{};
+  var s=clean(raw).replace(/^\s*[-•*·▶►■□○●◆◇※]\s*/,'').replace(/^\d+[.)]\s+/,'').trim();
   var orig=s,d=null,m;
   if((m=s.match(/(\d{4})\s*[-.\/]\s*(\d{1,2})\s*[-.\/]\s*(\d{1,2})/))){d=normDate(m[0]);s=s.replace(m[0],' ')}
   else if((m=s.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/))){d=mkDate(+m[1],+m[2]);s=s.replace(m[0],' ')}
@@ -976,25 +1011,96 @@ function parseLine(raw){
   else{var r=relDate(s);if(r){d=r.d;s=s.replace(r.tok,' ')}}
   s=s.replace(/\(\s*[월화수목금토일]\s*\)/g,' ');
   var tm='', AP='(오전|오후|아침|점심|낮|저녁|밤|새벽)';
-  if((m=s.match(new RegExp(AP+'?\\s*(\\d{1,2})\\s*:\\s*(\\d{2})')))){tm=normTime(m[0]);s=s.replace(m[0],' ')}
+  /* 시각 범위 '18:00~20:00', '18시~20시' → 시작만, 범위 전체는 제목에서 제거 */
+  if((m=s.match(new RegExp(AP+'?\\s*(\\d{1,2})\\s*[:시]\\s*(\\d{2})?\\s*분?\\s*[~\\-–—]\\s*'+AP+'?\\s*(\\d{1,2})\\s*[:시]\\s*(\\d{2})?\\s*분?')))){
+    tm=normTime((m[1]||'')+' '+m[2]+':'+(m[3]||'00'));s=s.replace(m[0],' ');
+  }
+  else if((m=s.match(new RegExp(AP+'?\\s*(\\d{1,2})\\s*:\\s*(\\d{2})')))){tm=normTime(m[0]);s=s.replace(m[0],' ')}
   else if((m=s.match(new RegExp(AP+'?\\s*(\\d{1,2})\\s*시\\s*(반|\\d{1,2}\\s*분)?')))){tm=normTime(m[0]);s=s.replace(m[0],' ')}
+  s=s.replace(/^\s*시간\s*[:：]\s*/,' ');
+  /* 담당: 정식 이름 → 짧은 이름 → 줄 맨 앞 '팀장님' */
   var whoL=[];
   MEMBERS.forEach(function(n){if(s.indexOf(n)>-1){whoL.push(n);s=s.split(n).join(' ')}});
-  var t=s.replace(/\s+/g,' ').replace(/^[\s\-–—:·,~]+|[\s\-–—:·,~]+$/g,'');
-  return {inc:!!d,d:d||'',time:tm,p:guess(PROJECT_KEYS,orig)||'team',k:guess(KIND_KEYS,orig)||'',t:t||orig,who:whoL.join('·'),n:''};
+  Object.keys(SHORT_NAMES).forEach(function(k){
+    var full=SHORT_NAMES[k];if(whoL.indexOf(full)>-1)return;
+    var re=new RegExp('(^|[\\s·,/\\t:(])'+k+'(?=$|[\\s·,/\\t:)님씨]|[이가은는의와과도께])');
+    if(re.test(s)){whoL.push(full);s=s.replace(new RegExp(k+'(님|씨)?'),' ')}
+  });
+  if(/^\s*팀장님?(\s|\t|:|$)/.test(orig)&&whoL.indexOf(LEADER)<0){whoL.push(LEADER);s=s.replace(/^\s*팀장님?/,' ')}
+  /* 제목 정리: 표의 프로젝트·담당 칸에서 온 말은 앞에서 떼기 */
+  var t=s.replace(/\t+/g,' ').replace(/\s+/g,' ').trim();
+  t=t.replace(/^(팀\s*공통|전체\s*IP)\s+/,'').replace(/^[\s\-–—:·,~]+|[\s\-–—:·,~]+$/g,'');
+  var p=guess(PROJECT_KEYS,orig);
+  var pFromText=!!p;
+  var inherited=false;
+  if(!p&&ctx.project){p=ctx.project;inherited=true}
+  var past=!!(d&&d<TISO);
+  return {inc:!!d&&!past,d:d||'',time:tm,p:p||'team',k:guess(KIND_KEYS,orig)||'',t:t||orig,
+          who:whoL.join('·'),n:'',past:past,inherited:inherited,pFromText:pFromText||inherited};
 }
+
+/* 마스터 이름만 단독으로 있는 줄 = 아래 줄들의 프로젝트 제목 */
+function headerProject(line){
+  var s=clean(line).trim();
+  if(!s||s.length>24)return null;
+  if(/\d{1,2}\s*[\/월]/.test(s))return null;
+  if(/[:：]/.test(s))return null;
+  if(guess(KIND_KEYS,s))return null;
+  return guess(PROJECT_KEYS,s);
+}
+function isSectionHeader(line){return /^\s*\d+\s*[.)]\s*\S/.test(clean(line))}
+function isDateOnly(line){
+  var s=clean(line).replace(/\(\s*[월화수목금토일]\s*\)/g,'').replace(/\s+/g,'');
+  return /^(\d{4}[-.\/])?\d{1,2}[\/.]\d{1,2}$/.test(s)||/^\d{1,2}월\d{1,2}일$/.test(s);
+}
+
 function analyze(text){
-  var t=String(text||'').replace(/^\uFEFF/,'').trim();
+  var t=clean(text).trim();
   if(!t)return {type:'empty'};
   var tb=parseTable(t);
   if(tb.length>1){
     var hd=tb[0].map(function(x){return String(x).trim()});
     if(hd.indexOf('구분')>-1&&hd.indexOf('제목')>-1)return {type:'table',text:t};
   }
-  var rows=[];
-  t.split(/\r?\n/).forEach(function(l){l=l.trim();if(l)rows.push(parseLine(l))});
-  return {type:'free',rows:rows};
+  /* 1) 날짜만 있는 줄은 다음 줄과 합침 (표가 줄바꿈으로 깨진 경우) */
+  var raw=t.split(/\r?\n/).map(function(l){return l.trim()}).filter(Boolean), lines=[];
+  for(var i=0;i<raw.length;i++){
+    if(isDateOnly(raw[i])&&i+1<raw.length&&!isDateOnly(raw[i+1])){lines.push(raw[i]+' '+raw[i+1]);i++}
+    else lines.push(raw[i]);
+  }
+  /* 2) 줄마다 파싱 — 마스터 제목줄은 아래로 물려줌, 번호 제목(1. 2. …)에서 초기화 */
+  var rows=[],ctx={project:null},skipped=0;
+  lines.forEach(function(l){
+    if(isSectionHeader(l)){ctx.project=null;return}
+    var hp=headerProject(l);
+    if(hp){ctx.project=hp;return}
+    rows.push(parseLine(l,ctx));
+  });
+  /* 3) 같은 일정 합치기 — 시각 있는 쪽을 살리고 담당은 모음 */
+  var out=[],dups=0;
+  rows.forEach(function(r){
+    if(!r.d){out.push(r);return}
+    var same=out.filter(function(x){return x.d&&sameItem(x,r)})[0];
+    if(!same){out.push(r);return}
+    dups++;
+    if(!same.time&&r.time){same.time=r.time}
+    if(r.t.length<same.t.length&&coreTokens(r.t).length)same.t=r.t;
+    if(r.who){var w=(same.who?same.who.split('·'):[]);r.who.split('·').forEach(function(x){if(w.indexOf(x)<0)w.push(x)});same.who=w.join('·')}
+  });
+  /* 4) 이미 DB에 있는 일정은 건너뜀 */
+  var exist=0;
+  out.forEach(function(r){
+    if(!r.d||!r.inc)return;
+    var hit=(FULL&&FULL.EVENTS||EVENTS).some(function(e){return e.d===r.d&&sameItem({d:e.d,p:e.p,t:e.t},r)});
+    if(hit){r.inc=false;r.exists=true;exist++}
+  });
+  /* 5) 긴 글(회의록 같은)이면 날짜 없는 줄은 표에 안 띄움 */
+  var dated=out.filter(function(r){return r.d}).length;
+  var longText=lines.length>12&&dated/Math.max(1,out.length)<0.4;
+  if(longText){skipped=out.filter(function(r){return !r.d}).length;out=out.filter(function(r){return r.d})}
+  return {type:'free',rows:out,stats:{lines:lines.length,dups:dups,exist:exist,skipped:skipped,past:out.filter(function(r){return r.past}).length}};
 }
+
 
 
 /* ═══════════════ 상태 ═══════════════ */
@@ -1004,7 +1110,7 @@ var qLeft=diff(new Date(qNow.y,qNow.q*3,0),TODAY);
 qSel = qLeft<=14 ? 1 : 0;
 function ok(p){return !F || p===F}
 var Q='';
-function qnorm(x){return String(x==null?'':x).toLowerCase().replace(/\s+/g,'')}
+function qnorm(x){return clean(x).toLowerCase().replace(/\s+/g,'')}
 function qhit(o){
   if(!Q)return true;
   var bag=[o.t,o.who,o.n,PJ[o.p],KIND[o.k],o.time,o.d].map(qnorm).join(' ');
@@ -1542,7 +1648,24 @@ function openEdit(id){
 }
 function openNew(){openNewOn(TISO,'')}
 function openNewOn(d,who){
-  EDIT={id:newId(),e:{d:d||TISO,k:'team',p:'team',t:'',time:'',who:who||'',n:''},isNew:true};renderEdit();
+  var w=who||'';
+  EDIT={id:newId(),e:{d:d||TISO,k:'',p:F||'team',t:'',time:'',who:w,n:''},isNew:true,auto:{}};renderEdit();
+}
+/* 제목을 쓰면 프로젝트·종류·시각·담당을 비어 있는 칸에만 채움 */
+function smartFill(){
+  if(!EDIT)return;
+  var tEl=document.getElementById('f_t');if(!tEl)return;
+  var r=parseLine(tEl.value);
+  var pEl=document.getElementById('f_p'),kEl=document.getElementById('f_k'),tmEl=document.getElementById('f_time'),wEl=document.getElementById('f_who'),dEl=document.getElementById('f_d');
+  var filled=[];
+  var auto=EDIT.auto||(EDIT.auto={});
+  if(r.p&&r.p!=='team'&&(pEl.value==='team'||auto.p)){pEl.value=r.p;auto.p=1;filled.push(PJ[r.p])}
+  if(r.k&&(!kEl.value||auto.k)){kEl.value=r.k;auto.k=1;filled.push(KIND[r.k])}
+  if(r.time&&(!tmEl.value||auto.time)){tmEl.value=r.time;auto.time=1;filled.push(r.time)}
+  if(r.who&&(!wEl.value||auto.who)){wEl.value=r.who;auto.who=1;filled.push(r.who)}
+  if(r.d&&EDIT.isNew&&(auto.d||dEl.value===TISO)){dEl.value=r.d;auto.d=1;filled.push(md(r.d))}
+  var h=document.getElementById('f_hint');
+  if(h)h.textContent=filled.length?'자동으로 채웠어요: '+filled.join(' · ')+' — 틀리면 직접 바꾸세요':'';
 }
 function renderEdit(){
   var m=document.getElementById('editModal');
@@ -1551,7 +1674,8 @@ function renderEdit(){
   var h='<div class="mbox" role="dialog" aria-modal="true" aria-label="일정 편집"><h3>'+(EDIT.isNew?'일정 추가':'일정 편집')+'</h3>'
    +'<div class="frow"><label>날짜</label><input type="date" id="f_d" value="'+esc(e.d||'')+'"></div>'
    +'<div class="frow"><label>시각</label><input type="text" id="f_time" value="'+esc(e.time||'')+'" placeholder="15:30 (비워도 됨)"></div>'
-   +'<div class="frow"><label>제목</label><input type="text" id="f_t" value="'+esc(e.t||'')+'"></div>'
+   +'<div class="frow"><label>제목</label><input type="text" id="f_t" value="'+esc(e.t||'')+'" placeholder="예: 홍박사 촬영 오후 3시"></div>'
+   +'<div class="fhint" id="f_hint"></div>'
    +'<div class="frow"><label>프로젝트</label><select id="f_p">'+opt(PJ,e.p,false)+'</select></div>'
    +'<div class="frow"><label>종류</label><select id="f_k">'+opt(KIND,e.k,true)+'</select></div>'
    +'<div class="frow"><label>담당</label><input type="text" id="f_who" value="'+esc(e.who||'')+'" placeholder="이름 · 이름"></div>'
@@ -1639,11 +1763,13 @@ async function bigUpdate(){
     finishUp(okc,rows.length-okc,0);
     return;
   }
+  (a.rows||[]).forEach(applyUpDefaults);
   var cand=(a.rows||[]).filter(function(r){return r.inc&&r.d&&r.t});
-  var bad=(a.rows||[]).filter(function(r){return !(r.d&&r.t)});
+  var bad=(a.rows||[]).filter(function(r){return !(r.d&&r.t)||(r.past&&!r.exists)});
+  UPSTATS=a.stats||null;
   if(!cand.length){
     upStep('');
-    PREV=a.rows||[];renderPreview();
+    PREV=(a.rows||[]).map(function(r){r.inc=false;return r});renderPreview();
     setMsg('날짜를 찾지 못해 자동 반영하지 못했어요. 아래 표에서 날짜를 넣고 「체크한 일정 추가」를 눌러주세요.',true);
     return;
   }
@@ -1657,13 +1783,42 @@ async function bigUpdate(){
   }
   finishUp(ok2,cand.length-ok2,bad.length,bad);
 }
+var UPSTATS=null;
+var UPSEL={who:[],p:'',k:''};
+var UPKINDS=['shoot','pub','live','meet','launch','deadline','event','plan','decide'];
+function renderUpOpts(){
+  var w=document.getElementById('upWho'),p=document.getElementById('upPj'),k=document.getElementById('upKind');
+  if(!w)return;
+  w.innerHTML=MEMBERS.map(function(n){
+    return '<button type="button" class="upc" data-up="who" data-v="'+esc(n)+'" aria-pressed="'+(UPSEL.who.indexOf(n)>-1)+'">'+esc(n)+'</button>';
+  }).join('');
+  p.innerHTML='<button type="button" class="upc" data-up="p" data-v="" aria-pressed="'+(UPSEL.p==='')+'">자동</button>'+
+    Object.keys(PJ).map(function(x){
+      return '<button type="button" class="upc pjc" data-up="p" data-v="'+x+'" style="--c:var(--'+x+')" aria-pressed="'+(UPSEL.p===x)+'">'+esc(PJ[x])+'</button>';
+    }).join('');
+  k.innerHTML='<button type="button" class="upc" data-up="k" data-v="" aria-pressed="'+(UPSEL.k==='')+'">자동</button>'+
+    UPKINDS.map(function(x){
+      return '<button type="button" class="upc" data-up="k" data-v="'+x+'" aria-pressed="'+(UPSEL.k===x)+'">'+esc(KIND[x])+'</button>';
+    }).join('');
+}
+function applyUpDefaults(r){
+  if(UPSEL.who.length&&!r.who)r.who=UPSEL.who.join('·');
+  if(UPSEL.p&&(r.p==='team'||!r.p)&&!r.pFromText)r.p=UPSEL.p;
+  if(UPSEL.k&&!r.k)r.k=UPSEL.k;
+  return r;
+}
 function finishUp(ok2,fail,badN,bad){
   upStep('');
   document.getElementById('upText').value='';UPFILE='';
+  UPSEL={who:[],p:'',k:''};renderUpOpts();
   var fn=document.getElementById('upFileName');if(fn)fn.textContent='';
   var m=ok2+'건 반영했어요.'+(sbReady()?' 팀 전체에 바로 보입니다.':' (이 컴퓨터에만 저장)');
   if(fail)m+=' / 실패 '+fail+'건';
-  if(badN){m+=' / 날짜를 못 찾은 '+badN+'줄은 아래 표에서 확인해주세요.';PREV=bad||[];renderPreview()}
+  var st=UPSTATS||{};
+  if(st.dups)m+=' / 같은 일정 '+st.dups+'건 합침';
+  if(st.exist)m+=' / 이미 있는 일정 '+st.exist+'건 건너뜀';
+  if(st.skipped)m+=' / 날짜 없는 줄 '+st.skipped+'개 건너뜀';
+  if(badN){m+=' / 확인이 필요한 '+badN+'줄은 아래 표에서 골라주세요 (날짜 없음·지난 날짜).';PREV=(bad||[]).map(function(r){r.inc=false;return r});renderPreview()}
   setMsg(m,fail>0);
   var tb=document.querySelector('.tab[data-t=import]');if(tb)tb.focus();
 }
@@ -2653,6 +2808,13 @@ function renderImportDyn(){
 }
 
 $('p-import').addEventListener('click',function(ev){
+  var uc=ev.target.closest('[data-up]');
+  if(uc){
+    var f=uc.dataset.up,v=uc.dataset.v;
+    if(f==='who'){var i=UPSEL.who.indexOf(v);if(i>-1)UPSEL.who.splice(i,1);else UPSEL.who.push(v)}
+    else UPSEL[f]=v;
+    renderUpOpts();return;
+  }
   var t=ev.target.closest('[data-i]');if(!t)return;
   var a=t.dataset.i;
   if(a==='reload'){var u=lsGet('sched_url_v1')||(SHEET_ID?sheetCsvUrl(SHEET_ID):'');if(u){setMsg('불러오는 중…');fetchUrl(u)}else setMsg('시트 주소가 없어요.',true);return}
@@ -2674,8 +2836,8 @@ $('p-import').addEventListener('click',function(ev){
   else if(a==='delmine'){USER_EVENTS.splice(+t.dataset.r,1);saveUser();setData(CUR);render()}
   else if(a==='dl')dlText('운영스케줄_전체.csv',toCSV(allRows()));
   else if(a==='reset'){lsDel('sched_csv_v1');setData(BASE);SRC={type:'embedded',label:'내장 데이터',short:'내장',atISO:BUILT,atText:BUILT.replace(/-/g,'.')+' 기준'};setMsg('내장 데이터로 되돌렸어요.');render()}
-  else if(a==='seturl'){var u=$('urlIn').value.trim();if(!u){lsDel('sched_url_v1');setMsg('주소를 지웠어요.')}else{lsSet('sched_url_v1',u);setMsg('불러오는 중…');fetchUrl(u)}}
-  else if(a==='clearurl'){$('urlIn').value='';lsDel('sched_url_v1');setMsg('주소를 지웠어요.')}
+  else if(a==='seturl'){var u=($('urlIn')||{value:''}).value.trim();if(!u){lsDel('sched_url_v1');setMsg('주소를 지웠어요.')}else{lsSet('sched_url_v1',u);setMsg('불러오는 중…');fetchUrl(u)}}
+  else if(a==='clearurl'){if($('urlIn'))$('urlIn').value='';lsDel('sched_url_v1');setMsg('주소를 지웠어요.')}
 });
 function onPrevEdit(ev){
   var t=ev.target;if(t.dataset.r==null)return;
@@ -2713,9 +2875,10 @@ $('upFile').addEventListener('change',function(e){var f=e.target.files[0];if(f)l
   var url=(SUPA_URL&&SUPA_KEY)?'':lsGet('sched_url_v1');
   if(SUPA_URL&&SUPA_KEY)lsDel('sched_url_v1');
   var onWeb=(location.protocol==='http:'||location.protocol==='https:');
-  if(!url&&SHEET_ID&&onWeb){url=sheetCsvUrl(SHEET_ID);lsSet('sched_url_v1',url)}
+  /* 구글 시트 자동 불러오기는 Supabase로 대체됨 — 쓰지 않음 */
+  if(SUPA_URL&&SUPA_KEY){url='';lsDel('sched_url_v1')}
   if(url&&!onWeb)url='';
-  $('urlIn').value=url||'';
+  var ui0=$('urlIn');if(ui0)ui0.value=url||'';
   render();
   if(url)fetchUrl(url);
   (function(){
@@ -2758,6 +2921,10 @@ $('upFile').addEventListener('change',function(e){var f=e.target.files[0];if(f)l
     if(EDIT){EDIT=null;renderEdit()}
     if(REDIT){REDIT=null;renderRuleEdit()}
   });
+  document.getElementById('editModal').addEventListener('input',function(ev){
+    if(ev.target.id==='f_t'&&EDIT&&EDIT.isNew){clearTimeout(window.__sf);window.__sf=setTimeout(smartFill,250)}
+    if(EDIT&&EDIT.auto&&ev.target.id&&ev.target.id!=='f_t'){var k=ev.target.id.replace('f_','');delete EDIT.auto[k==='time'?'time':k]}
+  });
   document.getElementById('editModal').addEventListener('change',function(ev){
     if(ev.target.id==='r_kind'&&REDIT){
       ['t','p','who','note'].forEach(function(f){var el=document.getElementById('r_'+f);if(el)REDIT[f]=el.value});
@@ -2784,6 +2951,7 @@ $('upFile').addEventListener('change',function(e){var f=e.target.files[0];if(f)l
     var el=ev.target.closest&&ev.target.closest('[data-edit]');if(!el)return;
     ev.preventDefault();openEdit(el.dataset.edit);
   });
+  renderUpOpts();
   initShared();
   initSupa();
 })();
