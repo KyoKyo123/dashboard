@@ -450,6 +450,35 @@ table.ro tr.clik:hover td{background:#F4F4F4}
 .upc[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
 .upc.pjc[aria-pressed="true"]{background:var(--c);border-color:var(--c)}
 .uptip{font-size:15px;color:var(--muted);margin-top:6px}
+.di{display:flex;align-items:baseline;gap:7px;border-left:5px solid var(--c);background:#F5F5F5;padding:5px 8px;margin-bottom:4px;cursor:pointer}
+.di:hover{background:#ECECEC}
+.di.tent{border-left-style:dashed}
+.di.now{background:#111;color:#fff}
+.di.now .dtm,.di.now .dpj{color:#ddd}
+.dtm{font-size:15px;font-weight:800;min-width:44px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.dtt{font-size:16px;font-weight:700;flex:1;line-height:1.3}
+.dpj{font-size:15px;color:var(--muted);white-space:nowrap}
+.tlwrap{background:#fff;border:1px solid var(--line);overflow:auto;min-height:0}
+.tl{display:grid;min-width:1100px;position:relative;height:100%}
+.tlh{position:sticky;top:0;z-index:2;background:#F2F2F2;font-size:15px;font-weight:800;color:var(--muted);padding:6px 4px;border-bottom:2px solid var(--ink);text-align:center}
+.tln{padding:5px 10px;min-height:0;overflow:hidden;border-bottom:1px solid var(--line);border-right:1px solid var(--line);background:#FAFAFA}
+.tln{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+.tln b{font-size:17px}
+.tln span{font-size:15px;color:var(--muted);font-weight:700}
+.tln.me{box-shadow:inset 4px 0 0 var(--ink)}
+.tln.none{background:#F4F4F4}
+.tlc{border-bottom:1px solid var(--line);border-right:1px solid var(--line2);padding:2px 3px;min-height:0;overflow-y:auto}
+.tlc.tlu{background:#FAFAFA}
+.tlc.nowc{background:#F0F0F0;box-shadow:inset 3px 0 0 var(--red)}
+.tlc.clash{background:#FDF1EF}
+.tlc .di{flex-direction:column;gap:0;padding:2px 5px;margin-bottom:2px}
+.tlc.tlu .di{flex-direction:row;align-items:baseline}
+.tlc.tlu .dtt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlc .dtm{min-width:0}
+.tlc .dtt{font-size:15px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tlc:not(.tlu) .dtm{font-size:15px;line-height:1.2}
+.tlnote{font-size:15px;color:var(--muted);padding:6px 2px}
+body.dayview .whobar{display:none}
 /* 검색 */
 .searchbar{display:flex;gap:10px;align-items:center;padding:10px 0 0}
 #q2{flex:1;max-width:520px;font-size:17px;padding:9px 14px;border:2px solid var(--line);border-radius:100px;background:#fff;color:var(--text)}
@@ -533,7 +562,8 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
       <div class="hd2"><button class="ftoggle" id="fitBtn" aria-pressed="true">한 화면</button><div class="hint" id="hint"></div></div>
     </div>
     <nav class="tabs" role="tablist" id="tabs">
-      <button class="tab" role="tab" data-t="week" aria-selected="true">주간</button>
+      <button class="tab" role="tab" data-t="day" aria-selected="true">일간</button>
+      <button class="tab" role="tab" data-t="week" aria-selected="false">주간</button>
       <button class="tab" role="tab" data-t="month" aria-selected="false">월간</button>
       <button class="tab" role="tab" data-t="quarter" aria-selected="false">분기</button>
       <button class="tab" role="tab" data-t="year" aria-selected="false">연간</button>
@@ -557,7 +587,8 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
   </div>
   <div class="filters" id="filters"></div>
   <main>
-    <section class="panel" id="p-week" role="tabpanel"></section>
+    <section class="panel" id="p-day" role="tabpanel"></section>
+    <section class="panel" id="p-week" role="tabpanel" hidden></section>
     <section class="panel" id="p-month" role="tabpanel" hidden></section>
     <section class="panel" id="p-quarter" role="tabpanel" hidden></section>
     <section class="panel" id="p-year" role="tabpanel" hidden></section>
@@ -1104,7 +1135,7 @@ function analyze(text){
 
 
 /* ═══════════════ 상태 ═══════════════ */
-var TAB='week', F=null, wOff=0, mOff=0, yOff=0, qSel=0, pOff=0;
+var TAB='day', F=null, wOff=0, mOff=0, yOff=0, qSel=0, pOff=0;
 var qNow={y:TODAY.getFullYear(), q:Math.floor(TODAY.getMonth()/3)+1};
 var qLeft=diff(new Date(qNow.y,qNow.q*3,0),TODAY);
 qSel = qLeft<=14 ? 1 : 0;
@@ -1468,13 +1499,14 @@ function render(){
   renderFilters();
   if(fitOn()){renderWeekFit();renderMonthFit();renderQuarterFit();renderYearFit()}
   else{renderWeek();renderMonth();renderQuarter();renderYear()}
-  renderWhoBar();renderTable();renderRules();renderCheck();
+  renderWhoBar();renderDay();renderTable();renderRules();renderCheck();
   renderPast();renderPeople();renderImportDyn();if(typeof renderShareList==='function'){renderShareList();renderSettings()}
-  ['week','month','quarter','year','people','table','rules','check','past','import'].forEach(function(t){
+  ['day','week','month','quarter','year','people','table','rules','check','past','import'].forEach(function(t){
     document.getElementById('p-'+t).hidden=(t!==TAB);
   });
   [].slice.call(document.querySelectorAll('.tab')).forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===TAB?'true':'false')});
   document.body.classList.toggle('searching',!!Q);
+  document.body.classList.toggle('dayview',TAB==='day');
   var qc=document.getElementById('qClear');if(qc)qc.hidden=!Q;
   var qh=document.getElementById('qHit');
   if(qh){
@@ -1521,6 +1553,9 @@ document.addEventListener('click',function(ev){
   else if(a==='tnow'){TALL=false;TFROM=0}
   else if(a==='tall')TALL=true;
   else if(a==='tdl'){dlText('운영스케줄_전체.csv',toCSV(allRows()));return}
+  else if(a==='dprev')DOFF--;
+  else if(a==='dnext')DOFF++;
+  else if(a==='dnow')DOFF=0;
   else if(a==='me'){ME=v||'';lsSet('sched_me',ME);if(meIsLeader())TAB='check';else if(TAB==='check')TAB='week';setData(CUR)}
   else if(a==='ruleadd'){openRule(null);return}
   else if(a==='trowadd'){openNew();return}
@@ -2103,7 +2138,7 @@ function applyFitClass(){document.body.classList.toggle('fit',fitOn())}
 /* 남는 높이를 계산해 패널에 직접 지정 */
 function sizePanels(){
   if(!fitOn()){
-    ['week','month','quarter','year','people','table','rules','check','past','import'].forEach(function(t){
+    ['day','week','month','quarter','year','people','table','rules','check','past','import'].forEach(function(t){
       var el=document.getElementById('p-'+t); el.style.height=''; el.classList.remove('scroll');
     });
     return;
@@ -2111,7 +2146,7 @@ function sizePanels(){
   var m=document.querySelector('main');
   var top=m.getBoundingClientRect().top;
   var h=Math.max(300, window.innerHeight-top-8);
-  ['week','month','quarter','year','people'].forEach(function(t){
+  ['day','week','month','quarter','year','people'].forEach(function(t){
     var el=document.getElementById('p-'+t);
     el.style.height=h+'px'; el.classList.remove('scroll');
   });
@@ -2121,6 +2156,7 @@ function sizePanels(){
   });
   /* 각 탭 내부: 헤더 아래 남는 만큼 본문에 배분 */
   fitInner('p-week','.split2');
+  fitInner('p-day','.tlwrap');
   fitInner('p-month','.mfit');
   fitInner('p-year','.ygrid');
   fitInner('p-people','.pmw');
@@ -2629,6 +2665,69 @@ function renderCheck(){
   });
   h+='</div></div>';
   p.innerHTML=h;
+}
+
+
+/* ═══════════════ 일간 대시보드 ═══════════════ */
+var DOFF=0, DMODE=lsGet('sched_dmode')||'grid';
+var DAY_ORDER=['이채윤','이주희','김성현','김소연','__CENTER__','허교범','김희연','이예랑','__NONE__'];
+
+function dayAll(dt){
+  var list=dayItemsAll(dt).filter(function(e){return e.k!=='meet'||true});
+  return list;
+}
+function fullRoles(){return (FULL&&FULL.ROLES)||ROLES||[]}
+function fullRanges(){return (FULL&&FULL.RANGES)||RANGES||[]}
+function itemCard(e,mini){
+  var cls='di'+(e.tent?' tent':'')+(e._id?' clik':'')+(Q?(qhit(e)?' hit':' fade'):'');
+  return '<div class="'+cls+'" title="'+esc((e.time?e.time+' ':'')+e.t+(e.who?' · '+e.who:''))+'"'+(e._id?' data-edit="'+esc(e._id)+'" role="button" tabindex="0"':'')+' style="--c:var(--'+e.p+')">'
+    +(e.time?'<span class="dtm">'+esc(e.time)+'</span>':'')
+    +'<span class="dtt">'+hl(e.t)+'</span>'
+    +(mini?'':'<span class="dpj">'+esc(PJ[e.p]||'')+'</span>')
+    +'</div>';
+}
+function nowInfo(dt){
+  if(iso(dt)!==TISO||OVERRIDE)return null;
+  var n=new Date();return pad(n.getHours())+':'+pad(n.getMinutes());
+}
+function renderDay(){
+  var dt=addDays(TODAY,DOFF), s=iso(dt), items=dayAll(dt), now=nowInfo(dt);
+  var lab=DOFF===0?'오늘':DOFF===1?'내일':DOFF===-1?'어제':(DOFF>0?DOFF+'일 뒤':(-DOFF)+'일 전');
+  var h='<div class="phead"><div><h2>'+lab+' · '+fmt(dt)+'</h2><div class="rng">'
+    +(HOL[s]?'<b class="red">'+esc(HOL[s])+'</b> · ':'')+items.length+'건'+(now?' · 지금 '+now:'')+'</div></div>'
+    +'<div class="hd2"><div class="nav"><button class="nb" data-a="dprev">‹ 전날</button>'
+    +'<button class="nb" data-a="dnow"'+(DOFF===0?' disabled':'')+'>오늘</button>'
+    +'<button class="nb" data-a="dnext">다음날 ›</button></div></div></div>';
+  h+=dayTimeline(dt,items,now);
+  document.getElementById('p-day').innerHTML=h;
+}
+
+/* ── 타임라인: 사람 × 시간 ── */
+function dayTimeline(dt,items,now){
+  var H0=9,H1=21, hours=[];for(var x=H0;x<=H1;x++)hours.push(x);
+  var rows=MEMBERS.concat(['__NONE__']);
+  var cols='118px 230px repeat('+hours.length+',minmax(0,1fr))';
+  var h='<div class="tl" style="grid-template-columns:'+cols+';grid-template-rows:auto repeat('+rows.length+',minmax(0,1fr))">';
+  h+='<div class="tlh"></div><div class="tlh">시간 미정</div>';
+  hours.forEach(function(x){h+='<div class="tlh">'+x+'시</div>'});
+  rows.forEach(function(who){
+    var mine=items.filter(function(e){var ps=people(e);return who==='__NONE__'?!ps.length:ps.indexOf(who)>-1});
+    var name=who==='__NONE__'?'미배정':who;
+    h+='<div class="tln'+(who==='__NONE__'?' none':'')+(ME===who?' me':'')+'"><b>'+esc(name)+'</b><span>'+mine.length+'건</span></div>';
+    var untimed=mine.filter(function(e){return !e.time});
+    h+='<div class="tlc tlu">'+untimed.map(function(e){return itemCard(e,true)}).join('')+'</div>';
+    hours.forEach(function(x){
+      var inH=mine.filter(function(e){if(!e.time)return false;var hh=+e.time.slice(0,2);return hh===x||(x===H0&&hh<H0)||(x===H1&&hh>H1)});
+      var nowCls=now&&(+now.slice(0,2)===x)?' nowc':'';
+      h+='<div class="tlc'+nowCls+(inH.length>=2?' clash':'')+'">'+inH.map(function(e){return itemCard(e,true)}).join('')+'</div>';
+    });
+  });
+  h+='</div>';
+  if(now){
+    var hh=+now.slice(0,2),mm=+now.slice(3,5);
+    if(hh>=H0&&hh<=H1)h=h.replace('<div class="tl"','<div class="tl" data-now="'+((hh-H0)+mm/60)+'"');
+  }
+  return '<div class="tlwrap">'+h+'</div><div class="tlnote">같은 칸에 2건 이상이면 붉게 — 겹치는 시간이에요.</div>';
 }
 
 /* ═══════════════ 사람별 ═══════════════ */
