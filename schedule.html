@@ -1231,7 +1231,7 @@ function item(e,s,right){
 }
 function rhythmId(r,s){return 'r-'+s.replace(/-/g,'')+'-'+h36(r.p+'|'+r.t)}
 function rhythmOcc(r,s){
-  var o={t:r.t,p:r.p,k:r.k,who:r.who,n:r.n,tent:r.tent,time:r.time,d:s};
+  var o={t:r.t,p:r.p,k:r.k,who:r.who,n:r.n,tent:r.tent,time:r.time,time2:r.time2,d:s};
   if(r.num){var i=0,d=parse(r.from),end=parse(s);while(d<=end){if(r.days.indexOf(d.getDay())>-1)i++;d=addDays(d,1)}o.t=r.t+' '+i+'/'+r.num+'호'}
   o._id=rhythmId(r,s); o._rep=1;
   var ov=SHARED[o._id];
@@ -2073,6 +2073,7 @@ function rowsToData(rows){
       if(!days.length){d.WEEKLY_ANY.push(o2);return}
       o2.days=days;
       if(r.tm)o2.time=r.tm;
+      if(r.tm2)o2.time2=r.tm2;
       if(r.d)o2.from=r.d;
       if(r.e_date)o2.to=r.e_date;
       if(r.num)o2.num=r.num;
@@ -2530,7 +2531,7 @@ function ruleLine(r){
   var k=r.kind, bits=[];
   if(k==='매주'){
     bits.push('<b>매주 '+esc(String(r.days||'요일 미정').split('').join('·'))+'</b>');
-    if(r.tm)bits.push(esc(r.tm));
+    if(r.tm)bits.push(esc(r.tm+(r.tm2?'~'+r.tm2:'')));
     if(r.d||r.e_date)bits.push(esc((r.d?md(r.d):'')+' ~ '+(r.e_date?md(r.e_date):'')));
     if(r.num)bits.push(r.num+'회');
   }else if(k==='기간'){
@@ -2591,7 +2592,7 @@ function renderRuleEdit(){
    +'<div class="frow"><label>프로젝트</label><select id="r_p">'+opt(PJ,r.p||'team',false)+'</select></div>';
   if(k==='매주'){
     h+='<div class="frow"><label>요일</label><input type="text" id="r_days" value="'+esc(r.days||'')+'" placeholder="예: 화목토"></div>'
-     +'<div class="frow"><label>시각</label><input type="text" id="r_tm" value="'+esc(r.tm||'')+'" placeholder="비워도 됨"></div>'
+     +'<div class="frow"><label>시각</label><span class="trng"><input type="text" id="r_tm" value="'+esc(r.tm||'')+'" placeholder="시작 (비워도 됨)"><b>~</b><input type="text" id="r_tm2" value="'+esc(r.tm2||'')+'" placeholder="끝 (선택)"></span></div>'
      +'<div class="frow"><label>시작일</label><input type="date" id="r_d" value="'+esc(r.d||'')+'"></div>'
      +'<div class="frow"><label>종료일</label><input type="date" id="r_e" value="'+esc(r.e_date||'')+'"></div>'
      +'<div class="frow"><label>총 횟수</label><input type="text" id="r_num" value="'+esc(r.num||'')+'" placeholder="예: 6 (비워도 됨)"></div>';
@@ -2616,10 +2617,12 @@ async function saveRule(){
   var k=rv('r_kind'),t=rv('r_t');
   if(!t){setMsg('제목을 넣어주세요.',true);return}
   var row={kind:k,t:t,p:rv('r_p')||'team',who:rv('r_who')||null,note:rv('r_note')||null,tent:!!rv('r_tent'),
-           days:null,tm:null,d:null,e_date:null,num:null};
+           days:null,tm:null,tm2:null,d:null,e_date:null,num:null};
+  if(NO_TM2)delete row.tm2;
   if(k==='매주'){
     var ds=[];String(rv('r_days')).split('').forEach(function(c){if(WD.indexOf(c)>-1&&ds.indexOf(c)<0)ds.push(c)});
-    row.days=ds.join('')||null; row.tm=normTime(rv('r_tm'))||null;
+    row.days=ds.join('')||null; row.tm=normTime(rv('r_tm'))||null; row.tm2=normTime(rv('r_tm2'))||null;
+    if(NO_TM2)delete row.tm2;
     row.d=rv('r_d')||null; row.e_date=rv('r_e')||null;
     var nn=parseInt(rv('r_num'),10); row.num=nn>0?nn:null;
     if(!row.days){setMsg('요일을 넣어주세요 (예: 화목토).',true);return}
