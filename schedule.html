@@ -486,8 +486,9 @@ body.dayview .whobar{display:none}
 .tlbar{position:absolute;box-sizing:border-box;padding:2px 7px;border-left:5px solid var(--c);background:#EDEDED;border-radius:3px;
   overflow:hidden;cursor:pointer;font-size:15px;line-height:1.25;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;min-width:0}
 .tlbar:hover{background:#E2E2E2;z-index:3}
-.tlbar{background:linear-gradient(to right,#E2E2E2 0,#E2E2E2 var(--dur,100%),#F4F4F4 var(--dur,100%))}
-.tlbar.one{flex-direction:row;align-items:center;gap:6px;padding:0 6px}
+.tlbar{background:linear-gradient(to right,#F4F4F4 0,#F4F4F4 var(--d0,0%),#E2E2E2 var(--d0,0%),#E2E2E2 var(--d1,100%),#F4F4F4 var(--d1,100%))}
+
+.tlbar.one{flex-direction:row;align-items:center;justify-content:flex-start;gap:6px;padding:0 6px}
 .tlbar.one .bt{flex:none}
 .tlbar.pub{border-left-width:4px}
 .tlbar.tent{border-left-style:dashed}
@@ -818,9 +819,9 @@ var ROLES = [
  {who:'소연',p:'hong',t:'홍춘욱 발행 온보딩 (w.지선 이사)'},
  {who:'소연',p:'hong',t:'프리즘 분석 · 신규 기획안'}
 ];
-var MEMBERS = ['이채윤','이주희','김성현','김소연','허교범','김희연','이예랑'];
+var MEMBERS = ['이채윤','이주희','김성현','김소연','허교범','김희연','김경은','이예랑'];
 var LEADER = '이채윤';
-var ALIAS = {'김소연':['김소연','소연'],'이채윤':['이채윤','채윤','팀장','팀장님'],'이주희':['이주희','주희'],'김성현':['김성현','성현'],'허교범':['허교범','교범'],'김희연':['김희연','희연'],'이예랑':['이예랑','예랑']};
+var ALIAS = {'김소연':['김소연','소연'],'이채윤':['이채윤','채윤','팀장','팀장님'],'이주희':['이주희','주희'],'김성현':['김성현','성현'],'허교범':['허교범','교범'],'김희연':['김희연','희연'],'김경은':['김경은','경은'],'이예랑':['이예랑','예랑']};
 var BUILT = '2026-09-28';
 
 /* 접속 정보는 같은 폴더의 config.js 에서 읽습니다. 이 파일엔 키를 적지 않습니다. */
@@ -920,7 +921,7 @@ function normUndated(s){
 }
 function canonName(n){n=String(n||'').trim();for(var k in ALIAS){if(ALIAS[k].indexOf(n)>-1)return k}return MEMBERS.indexOf(n)>-1?n:null}
 /* 담당 글에서 팀원 찾기 — 괄호·님·구분자에 상관없이 */
-var SN_PEOPLE={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','예랑':'이예랑'};
+var SN_PEOPLE={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','경은':'김경은','예랑':'이예랑'};
 function people(e){
   if(!e||!e.who)return [];
   var s=clean(e.who), found=[];
@@ -1062,7 +1063,7 @@ function relDate(s){
   return null;
 }
 /* 짧은 이름 → 정식 이름 (메모에서 '희연', '예랑'처럼만 써도 담당으로) */
-var SHORT_NAMES={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','예랑':'이예랑'};
+var SHORT_NAMES={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','경은':'김경은','예랑':'이예랑'};
 /* 제목에서 같은 일정인지 비교할 때 무시할 말 */
 var STOPW=['진행','예정','확인','준비','및','관련','사항','필요','정리','요청','운영','현장','지원','행사','회의','미팅','팀','공통','팀장님','w','등','의','건'];
 function coreTokens(t){
@@ -1938,7 +1939,7 @@ function loadUpFile(f){
 
 /* ── 설정: 팀원 · 반복 일정 (공유) ── */
 var SET={members:null,rhythms:null};
-function baseMembers(){return ['이채윤','이주희','김성현','김소연','허교범','김희연','이예랑']}
+function baseMembers(){return ['이채윤','이주희','김성현','김소연','허교범','김희연','김경은','이예랑']}
 function applySettings(){
   MEMBERS=(SET.members&&SET.members.length)?SET.members.slice():baseMembers();
   var extra=(SET.rhythms||[]).map(function(r){
@@ -2692,7 +2693,14 @@ function checkItems(){
     });
   }
   Object.keys(perDay).forEach(function(k){if(perDay[k].length>=3){var a=k.split('|');out.overload.push({who:a[0],d:a[1],n:perDay[k].length})}});
-  out.undated=(F0.UNDATED||[]).slice();
+  /* 날짜 미정: 론칭·판매 → 결정 → 나머지, 같은 순위면 이른 시기(월 → 분기) 먼저 */
+  var KPRI={launch:0,decide:1,deadline:1,event:2};
+  out.undated=(F0.UNDATED||[]).slice().sort(function(a,b){
+    var ka=(a.k in KPRI)?KPRI[a.k]:3, kb=(b.k in KPRI)?KPRI[b.k]:3;
+    if(ka!==kb)return ka-kb;
+    var wa=a.m||((a.q||'9999-Q9').replace('-Q','-1')), wb=b.m||((b.q||'9999-Q9').replace('-Q','-1'));
+    return wa<wb?-1:wa>wb?1:0;
+  });
   return out;
 }
 /* 담당자 필터와 무관하게 전체에서 하루치 */
@@ -2791,16 +2799,15 @@ function tmin(t){if(!t)return null;var m=String(t).match(/(\d{1,2}):(\d{2})/);re
 function dayTimeline(dt,items,now){
   var H0=9,H1=22,SPAN=(H1-H0)*60,hours=[];for(var x=H0;x<H1;x++)hours.push(x);
   var rows=MEMBERS.concat(['__NONE__']);
-  var h='<div class="tl" style="grid-template-columns:118px 230px 1fr;grid-template-rows:auto repeat('+rows.length+',minmax(0,1fr))">';
-  h+='<div class="tlh"></div><div class="tlh">시간 미정</div><div class="tlh tlhours">'+hours.map(function(x){return '<span>'+x+'시</span>'}).join('')+'</div>';
   var nowM=now?tmin(now)-H0*60:null;
   var PXM=Math.max(0.6,((window.innerWidth||1600)-118-230-70)/SPAN);
+  var body='',weights=[];
   rows.forEach(function(who){
     var mine=items.filter(function(e){var ps=people(e);return who==='__NONE__'?!ps.length:ps.indexOf(who)>-1});
     var name=who==='__NONE__'?'미배정':who;
-    h+='<div class="tln'+(who==='__NONE__'?' none':'')+(ME===who?' me':'')+'"><b>'+esc(name)+'</b><span>'+mine.length+'건</span></div>';
     var untimed=mine.filter(function(e){return !e.time});
-    h+='<div class="tlc tlu">'+untimed.map(function(e){return itemCard(e,true)}).join('')+'</div>';
+    var rowHead='<div class="tln'+(who==='__NONE__'?' none':'')+(ME===who?' me':'')+'"><b>'+esc(name)+'</b><span>'+mine.length+'건</span></div>'
+      +'<div class="tlc tlu">'+untimed.map(function(e){return itemCard(e,true)}).join('')+'</div>';
     /* 시간 막대
        · 실제 길이: 끝 시각이 있으면 그대로, 없으면 발행은 15분(그 시각에 올리는 일), 나머지 1시간
        · 보이는 폭: 실제 길이와 글자 길이 중 큰 쪽 → 글자가 잘리지 않게
@@ -2813,32 +2820,41 @@ function dayTimeline(dt,items,now){
       var s=Math.max(0,Math.min(SPAN-15,s0)), en=Math.max(s+15,Math.min(SPAN,e0));
       var lab=trange(e)+' '+e.t, px=0;
       for(var ci=0;ci<lab.length;ci++)px+=/[가-힣ㄱ-ㅎ]/.test(lab[ci])?15:8.5;
-      var vis=Math.max(en,Math.min(SPAN,s+(px+22)/PXM));
-      return {e:e,s:s,en:en,ve:vis,pub:pub};
-    }).sort(function(a,b){return a.s-b.s||b.ve-a.ve});
+      var need=(px+22)/PXM, vs=s, ve=Math.max(en,s+need);
+      /* 오른쪽 끝을 넘으면 왼쪽으로 늘림 (글자는 다 보이고, 실제 시간은 진하게) */
+      if(ve>SPAN){ve=SPAN;vs=Math.max(0,SPAN-Math.max(need,en-s))}
+      return {e:e,s:s,en:en,vs:vs,ve:ve,pub:pub};
+    }).sort(function(a,b){return a.vs-b.vs||b.ve-a.ve});
     var lanes=[];
     bars.forEach(function(b){
-      var li=0;while(li<lanes.length&&lanes[li]>b.s)li++;
+      var li=0;while(li<lanes.length&&lanes[li]>b.vs)li++;
       lanes[li]=b.ve;b.lane=li;
     });
     bars.forEach(function(b){
       b.clash=!b.pub&&bars.some(function(o){return o!==b&&!o.pub&&o.s<b.en&&b.s<o.en});
     });
     var nL=Math.max(1,lanes.length);
+    weights.push(Math.max(1,nL,Math.ceil(untimed.length/2)));
+    var h='';
     h+='<div class="tlane">';
     if(nowM!==null&&nowM>=0&&nowM<=SPAN)h+='<i class="tlnow" style="left:'+(nowM/SPAN*100)+'%"></i>';
     bars.forEach(function(b){
-      var e=b.e, cls='tlbar'+(nL>1?' one':'')+(b.pub?' pub':'')+(e.tent?' tent':'')+(b.clash?' clash':'')+(Q?(qhit(e)?' hit':' fade'):'')+(nowM!==null&&nowM>=b.s&&nowM<b.en?' live':'');
-      var dur=(b.en-b.s)/(b.ve-b.s)*100;
-      h+='<div class="'+cls+'" style="--c:var(--'+e.p+');--dur:'+dur.toFixed(1)+'%;left:'+(b.s/SPAN*100)+'%;width:'+((b.ve-b.s)/SPAN*100)+'%;top:calc('+(b.lane/nL*100)+'% + 2px);height:calc('+(100/nL)+'% - 3px)"'
+      var e=b.e, cls='tlbar one'+(b.pub?' pub':'')+(e.tent?' tent':'')+(b.clash?' clash':'')+(Q?(qhit(e)?' hit':' fade'):'')+(nowM!==null&&nowM>=b.s&&nowM<b.en?' live':'');
+      var W=b.ve-b.vs, d0=(b.s-b.vs)/W*100, d1=(b.en-b.vs)/W*100;
+      if(d0>0.5)cls+=' shift';
+      h+='<div class="'+cls+'" style="--c:var(--'+e.p+');--d0:'+d0.toFixed(1)+'%;--d1:'+d1.toFixed(1)+'%;left:'+(b.vs/SPAN*100)+'%;width:'+(W/SPAN*100)+'%;top:calc('+(b.lane/nL*100)+'% + 2px);height:calc('+(100/nL)+'% - 3px)"'
         +' title="'+esc(trange(e)+' '+e.t+(e.who?' · '+e.who:''))+'"'
         +(e._id?' data-edit="'+esc(e._id)+'" role="button" tabindex="0"':'')+'>'
         +'<span class="bt">'+esc(trange(e))+'</span><span class="bn">'+hl(e.t)+'</span></div>';
     });
     h+='</div>';
+    body+=rowHead+h;
   });
-  h+='</div>';
-  return '<div class="tlwrap">'+h+'</div><div class="tlnote">진한 부분이 실제 시간(시작~끝) · 발행은 그 시각에 올리는 일이라 짧게 표시 · 촬영·회의처럼 사람이 묶이는 일정끼리 시간이 겹치면 빨간 테두리</div>';
+  var tpl=weights.map(function(w){return 'minmax(0,'+w+'fr)'}).join(' ');
+  var out='<div class="tl" style="grid-template-columns:118px 230px 1fr;grid-template-rows:auto '+tpl+'">'
+    +'<div class="tlh"></div><div class="tlh">시간 미정</div><div class="tlh tlhours">'+hours.map(function(x){return '<span>'+x+'시</span>'}).join('')+'</div>'
+    +body+'</div>';
+  return '<div class="tlwrap">'+out+'</div><div class="tlnote">진한 부분이 실제 시간(시작~끝) · 발행은 그 시각에 올리는 일이라 짧게 표시 · 촬영·회의처럼 사람이 묶이는 일정끼리 시간이 겹치면 빨간 테두리</div>';
 }
 
 /* ═══════════════ 사람별 ═══════════════ */
