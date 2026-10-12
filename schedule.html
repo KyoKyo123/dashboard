@@ -26,6 +26,7 @@
   /* 시그니처 미지정 = 무채색 */
   --nuri:#8D4E1F;   /* 어스누리 — 갈색 */
   --ohjt:#AD1457;   /* 오종태 — 자주 */
+  --yik:#00838F;    /* 김영익 — 청록 */
   --team:#2B2B2B;   /* 팀 공통 — 먹색 */
   --event:#1B7F4B;  /* (구) 인턴총회 → 체슬리로 편입 */
 }
@@ -744,7 +745,7 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
         <div id="setRhythm"></div>
         <div class="setrow">
           <input type="text" id="rhT" placeholder="제목" style="max-width:190px">
-          <select id="rhP"><option value="hong">홍춘욱</option><option value="park">박세익·체슬리</option><option value="nuri">어스누리</option><option value="kim">김작가×빈센트</option><option value="lee">이정윤</option><option value="ohjt">오종태</option><option value="event">인턴총회</option><option value="team">팀 공통</option></select>
+          <select id="rhP"><option value="hong">홍춘욱</option><option value="park">박세익·체슬리</option><option value="nuri">어스누리</option><option value="kim">김작가×빈센트</option><option value="lee">이정윤</option><option value="ohjt">오종태</option><option value="yik">김영익</option><option value="event">인턴총회</option><option value="team">팀 공통</option></select>
           <input type="text" id="rhD" placeholder="요일 예: 화목토" style="max-width:130px">
           <input type="text" id="rhTime" placeholder="시각(선택)" style="max-width:110px">
           <input type="text" id="rhWho" placeholder="담당(선택)" style="max-width:120px">
@@ -760,7 +761,7 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
           <tr><td>종료일</td><td>기간·매주의 끝나는 날 (선택)</td></tr>
           <tr><td>요일</td><td>매주일 때만: 화목토 처럼 붙여 쓰기 (비우면 「요일 미정」)</td></tr>
           <tr><td>종류</td><td>론칭 · 촬영 · 발행 · 라이브 · 홍보 · 마감 · 행사 · 회의 · 결정 · 팀</td></tr>
-          <tr><td>프로젝트</td><td>홍춘욱 · 박세익·체슬리 · 어스누리 · 김작가×빈센트 · 이정윤 · 오종태 · 인턴총회 · 팀 공통</td></tr>
+          <tr><td>프로젝트</td><td>홍춘욱 · 박세익·체슬리 · 어스누리 · 김작가×빈센트 · 이정윤 · 오종태 · 김영익 · 인턴총회 · 팀 공통</td></tr>
           <tr><td>제목 · 시각 · 담당 · 메모</td><td>담당은 이름을 · 로 구분 (예: 이예랑·김희연)</td></tr>
           <tr><td>미확정 · 추정 · 중요</td><td>해당하면 1</td></tr>
           <tr><td>경고 · 횟수</td><td>경고=붉은 태그 문구 / 횟수=매주 반복의 총 횟수(예: 6)</td></tr>
@@ -783,7 +784,7 @@ footer{padding:34px 0 60px;color:var(--muted);font-size:15px;border-top:1px soli
 
 /* ═══════════════ DATA — 여기만 고치면 됨 (표 형태: 구글 시트 컬럼으로 그대로 옮길 수 있는 구조)
    d 날짜 · k 종류 · p 프로젝트 · t 제목 · time 시각 · who 담당 · n 메모 · tent 미확정 · est 추정 · flag 경고 · imp 중요 ═══════════════ */
-var PJ = {hong:'홍춘욱', park:'박세익·체슬리', nuri:'어스누리', kim:'김작가×빈센트', lee:'이정윤', ohjt:'오종태', team:'팀 공통'};
+var PJ = {hong:'홍춘욱', park:'박세익·체슬리', nuri:'어스누리', kim:'김작가×빈센트', lee:'이정윤', ohjt:'오종태', yik:'김영익', team:'팀 공통'};
 var KIND = {launch:'론칭', shoot:'촬영', pub:'발행', ep:'어스플러스', live:'라이브', promo:'홍보', deadline:'마감', event:'행사', meet:'회의', decide:'결정', plan:'기획', team:'팀'};
 var MAJOR = {launch:1, deadline:1, event:1, decide:1};
 var CHECK = {launch:1, deadline:1, event:1, decide:1};
@@ -875,14 +876,14 @@ var ROLES = [
  {who:'이채윤',p:'team',t:'팀 총괄 · 회의록 작성'},
  {who:'김성현',p:'park',t:'체슬리 라인 전체 편집 (고정)'},
  {who:'김성현',p:'ohjt',t:'오종태 리브랜딩 · 성과 추이 확인'},
- {who:'김희연',p:'lee',t:'이정윤 발행 온보딩 (w.유나 팀장)'},
+ {who:'김유현',p:'lee',t:'이정윤 발행 온보딩 (w.유나 팀장)'},
  {who:'김희연',p:'kim',t:'주간 리포트 제작'},
  {who:'이예랑',p:'kim',t:'데일리 리포트 제작'},
  {who:'허교범',p:'kim',t:'리포트 톤앤매너 통일 (w.이예랑)'},
  {who:'소연',p:'hong',t:'홍춘욱 발행 온보딩 (w.지선 이사)'},
  {who:'소연',p:'hong',t:'프리즘 분석 · 신규 기획안'}
 ];
-var MEMBERS = ['이채윤','이주희','김성현','김소연','허교범','김희연','김경은','김유현'];
+var MEMBERS = ['이채윤','이주희','김성현','김소연','허교범','김희연','김경은','김유현','차소담'];
 var LEADER = '이채윤';
 var ALIAS = {'김소연':['김소연','소연'],'이채윤':['이채윤','채윤','팀장','팀장님'],'이주희':['이주희','주희'],'김성현':['김성현','성현'],'허교범':['허교범','교범'],'김희연':['김희연','희연'],'김경은':['김경은','경은'],'김유현':['김유현','유현']};
 var BUILT = '2026-09-28';
@@ -929,6 +930,7 @@ function lsDel(k){try{localStorage.removeItem(k)}catch(e){}}
 var HEAD = ['구분','날짜','종료일','요일','종류','프로젝트','제목','시각','담당','메모','미확정','추정','경고','중요','횟수'];
 /* 프로젝트 매칭 — 별명·직함 포함. 위에서부터 먼저 걸리는 쪽이 이깁니다. */
 var PROJECT_KEYS = [
+ ['yik',['김영익','영익','차소담']],
  ['ohjt',['오종태']],
  ['nuri',['어스누리','누리']],
  ['lee',['이정윤','이세무사','세무사','슈퍼개미','밸런스투자','삼박자']],
@@ -951,6 +953,11 @@ function clean(x){
   x=x.replace(/[\uFF01-\uFF5E]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
   x=x.replace(/[\u2010-\u2015\u2212]/g,'-').replace(/[\u301C\uFF5E]/g,'~');
   return x;
+}
+var GENERIC_PJ=['프리미엄','얼리버드','오피셜클럽','모닝브리프','월간전망','월간 전망','총회','온보딩','ERRC','주간 회의','주간회의','GPS','팀 회의','팀회의'];
+function guessStrong(s){
+  var m=PROJECT_KEYS.map(function(x){return [x[0],x[1].filter(function(k){return GENERIC_PJ.indexOf(k)<0})]});
+  return guess(m,s);
 }
 function guess(map,s){
   var a=clean(s), b=stripTitles(a);
@@ -984,7 +991,7 @@ function normUndated(s){
 }
 function canonName(n){n=String(n||'').trim();for(var k in ALIAS){if(ALIAS[k].indexOf(n)>-1)return k}return MEMBERS.indexOf(n)>-1?n:null}
 /* 담당 글에서 팀원 찾기 — 괄호·님·구분자에 상관없이 */
-var SN_PEOPLE={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','경은':'김경은','유현':'김유현'};
+var SN_PEOPLE={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','경은':'김경은','유현':'김유현','소담':'차소담'};
 function people(e){
   if(!e||!e.who)return [];
   var s=clean(e.who), found=[];
@@ -1126,7 +1133,7 @@ function relDate(s){
   return null;
 }
 /* 짧은 이름 → 정식 이름 (메모에서 '희연', '예랑'처럼만 써도 담당으로) */
-var SHORT_NAMES={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','경은':'김경은','유현':'김유현'};
+var SHORT_NAMES={'채윤':'이채윤','주희':'이주희','성현':'김성현','소연':'김소연','교범':'허교범','희연':'김희연','경은':'김경은','유현':'김유현','소담':'차소담'};
 /* 제목에서 같은 일정인지 비교할 때 무시할 말 */
 var STOPW=['진행','예정','확인','준비','및','관련','사항','필요','정리','요청','운영','현장','지원','행사','회의','미팅','팀','공통','팀장님','w','등','의','건'];
 function coreTokens(t){
@@ -1175,10 +1182,13 @@ function parseLine(raw,ctx){
   /* 제목 정리: 표의 프로젝트·담당 칸에서 온 말은 앞에서 떼기 */
   var t=s.replace(/\t+/g,' ').replace(/\s+/g,' ').trim();
   t=t.replace(/^(팀\s*공통|전체\s*IP)\s+/,'').replace(/^[\s\-–—:·,~]+|[\s\-–—:·,~]+$/g,'');
-  var p=guess(PROJECT_KEYS,orig);
+  /* 프로젝트: 줄에 마스터 이름이 있으면 그것, 아니면 위 제목줄·선택한 프로젝트를 물려받음 (상품 이름만으로는 안 바꿈) */
+  var p=ctx.project?guessStrong(orig):guess(PROJECT_KEYS,orig);
   var pFromText=!!p;
   var inherited=false;
   if(!p&&ctx.project){p=ctx.project;inherited=true}
+  /* 제목이 너무 짧으면(예: 「오픈」) 소제목을 앞에 붙임 */
+  if(ctx.section&&!headerProject(ctx.section)&&!/^(공통|기타|팀\s*공통)$/.test(ctx.section)&&t&&coreTokens(t).length<=1)t=ctx.section+' '+t;
   var past=!!(d&&d<TISO);
   return {inc:!!d&&!past,d:d||'',time:tm,time2:tm2,p:p||'team',k:guess(KIND_KEYS,orig)||'',t:t||orig,
           who:whoL.join('·'),n:'',past:past,inherited:inherited,pFromText:pFromText||inherited};
@@ -1191,15 +1201,20 @@ function headerProject(line){
   if(/\d{1,2}\s*[\/월]/.test(s))return null;
   if(/[:：]/.test(s))return null;
   if(guess(KIND_KEYS,s))return null;
-  return guess(PROJECT_KEYS,s);
+  var p=guess(PROJECT_KEYS,s);if(!p)return null;
+  /* 마스터 이름 말고 다른 말이 남으면 제목줄이 아님 ('프리미엄 얼리버드 문구 정리' 같은 할 일) */
+  var r=stripTitles(s).replace(/^[\s\-•*·▶►■□○●◆◇※#\[【(]+|[\]】)\s:]+$/g,'');
+  PROJECT_KEYS.forEach(function(x){x[1].forEach(function(k){r=r.split(k).join(' ')})});
+  r=r.replace(/프로젝트|관련|라인|건|팀|파트|[·×x&,\/\s\-()\[\]]/g,'');
+  return r.length<=2?p:null;
 }
-function isSectionHeader(line){return /^\s*\d+\s*[.)]\s*\S/.test(clean(line))}
+function isSectionHeader(line){var s=clean(line);return /^\s*\d+\s*[.)]\s*\S/.test(s)&&!/\d{1,2}\s*\/\s*\d{1,2}/.test(s)&&s.length<=30}
 function isDateOnly(line){
   var s=clean(line).replace(/\(\s*[월화수목금토일]\s*\)/g,'').replace(/\s+/g,'');
   return /^(\d{4}[-.\/])?\d{1,2}[\/.]\d{1,2}$/.test(s)||/^\d{1,2}월\d{1,2}일$/.test(s);
 }
 
-function analyze(text){
+function analyze(text,defP){
   var t=clean(text).trim();
   if(!t)return {type:'empty'};
   var tb=parseTable(t);
@@ -1213,13 +1228,31 @@ function analyze(text){
     if(isDateOnly(raw[i])&&i+1<raw.length&&!isDateOnly(raw[i+1])){lines.push(raw[i]+' '+raw[i+1]);i++}
     else lines.push(raw[i]);
   }
-  /* 2) 줄마다 파싱 — 마스터 제목줄은 아래로 물려줌, 번호 제목(1. 2. …)에서 초기화 */
-  var rows=[],ctx={project:null},skipped=0;
+  /* 한 줄에 날짜가 여러 개면 나눔: '10/20 문자 발송, 10/22 오픈' */
+  var split=[];
   lines.forEach(function(l){
-    if(isSectionHeader(l)){ctx.project=null;return}
+    var parts=l.split(/\s*[,，]\s*(?=(?:\d{1,2}\s*\/\s*\d{1,2}|\d{1,2}\s*월\s*\d{1,2}\s*일))/);
+    if(parts.length>1&&/\d{1,2}\s*\/\s*\d{1,2}|\d{1,2}\s*월\s*\d{1,2}\s*일/.test(parts[0])){
+      var lead=(parts[0].match(/^\s*[-•*·▶►■□○●◆◇※]\s*/)||[''])[0];
+      parts.forEach(function(x,j){split.push(j?lead+x:x)});
+    }else split.push(l);
+  });
+  lines=split;
+  /* 2) 줄마다 파싱 — 마스터 제목줄은 아래로 물려줌, 번호 제목(1. 2. …)에서 초기화 */
+  var rows=[],docP=defP||null,skipped=0,rest=[];
+  /* 첫 줄이 날짜 없는 제목이고 마스터 이름이 있으면 = 문서 전체의 프로젝트 ('[김영익 점검 미팅]') */
+  if(!docP&&lines.length>1&&!/\d{1,2}\s*[\/월]\s*\d{1,2}/.test(lines[0])){var fp=guessStrong(lines[0]);if(fp)docP=fp}
+  var ctx={project:docP,section:''};
+  lines.forEach(function(l,idx){
+    if(isSectionHeader(l)){
+      /* 번호 소제목: 마스터 이름이 있으면 그 프로젝트, 없으면 문서 프로젝트로 */
+      var sp=guessStrong(l);ctx.project=sp||docP;
+      ctx.section=clean(l).replace(/^\s*\d+\s*[.)]\s*/,'').replace(/\(.*?\)/g,'').trim();
+      rest.push(l);return;
+    }
     var hp=headerProject(l);
-    if(hp){ctx.project=hp;return}
-    rows.push(parseLine(l,ctx));
+    if(hp){ctx.project=hp;if(!rows.length&&!docP)docP=hp;rest.push(l);return}
+    var r=parseLine(l,ctx);r.raw=l;rows.push(r);
   });
   /* 3) 같은 일정 합치기 — 시각 있는 쪽을 살리고 담당은 모음 */
   var out=[],dups=0;
@@ -1244,7 +1277,18 @@ function analyze(text){
   var longText=lines.length>12&&dated/Math.max(1,out.length)<0.4;
   var skippedLines=[];
   if(longText){skippedLines=out.filter(function(r){return !r.d}).map(function(r){return r.t});skipped=skippedLines.length;out=out.filter(function(r){return r.d})}
-  return {type:'free',rows:out,stats:{lines:lines.length,dups:dups,exist:exist,skipped:skipped,skippedLines:skippedLines,past:out.filter(function(r){return r.past}).length}};
+  /* 일정이 안 되는 줄(날짜 없음·지난 날짜)은 원문 그대로 메모로 — 이름·소제목 포함, 순서 유지 */
+  var memoLines=[];
+  lines.forEach(function(l){
+    if(rest.indexOf(l)>-1){memoLines.push(l);return}
+    var r=rows.filter(function(x){return x.raw===l})[0];
+    if(!r||!r.d||r.past)memoLines.push(l);
+  });
+  /* 소제목만 남고 내용이 없으면 뺌 */
+  var hasBody=memoLines.some(function(l){return rest.indexOf(l)<0});
+  var mp=docP||(rows.filter(function(r){return r.pFromText})[0]||{}).p||'team';
+  var memo=hasBody?{lines:memoLines,p:mp,who:people({who:memoLines.join(' ')}).join('·')}:null;
+  return {type:'free',rows:out,memo:memo,stats:{lines:lines.length,dups:dups,exist:exist,skipped:skipped,skippedLines:skippedLines,past:out.filter(function(r){return r.past}).length}};
 }
 
 
@@ -1914,7 +1958,7 @@ async function bigUpdate(){
   if(!src.trim()){setMsg('올릴 내용이 없어요. 일정을 적거나 파일을 올려주세요.',true);return}
   upStep('읽는 중…',true);
   await new Promise(function(r){setTimeout(r,120)});
-  var a=analyze(src);
+  var a=analyze(src,UPSEL.p||null);
   if(a.type==='table'){
     upStep('표로 읽었어요. 적용 중…',true);
     var res=tableToData(parseTable(src));
@@ -1942,8 +1986,9 @@ async function bigUpdate(){
     PREV=need.map(function(r){r.inc=false;return r});renderPreview();
     var msg0=st0.exist?('글 안의 일정 '+st0.exist+'건은 이미 들어가 있어서 새로 넣을 일정이 없어요.'+(need.length?' 확인이 필요한 '+need.length+'줄은 아래 표에서 골라주세요.':''))
       :'날짜를 찾지 못해 자동 반영하지 못했어요. 아래 표에서 날짜를 넣고 「체크한 일정 추가」를 눌러주세요.';
-    setMsg(msg0,!st0.exist);
-    offerSkip(st0);
+    var mm0=await saveUpMemo(a.memo);
+    if(mm0)msg0=(st0.exist?msg0+' ':'')+mm0+(need.length?' 날짜를 넣어 일정으로도 올리려면 아래 표에서 골라주세요.':'');
+    setMsg(msg0,!st0.exist&&!mm0);
     return;
   }
   var ok2=0;
@@ -1954,7 +1999,26 @@ async function bigUpdate(){
     var okOne = sbReady() ? await sbInsert(fl) : await writeShared(newId(),{fields:fl,hidden:false,type:'add'});
     if(okOne)ok2++;
   }
+  UPMEMO=await saveUpMemo(a.memo);
   finishUp(ok2,cand.length-ok2,bad.length,bad);
+}
+/* 일정이 안 된 줄 전부 → 정리 보드 메모 하나 (원문 그대로, 줄바꿈 유지) */
+var UPMEMO='';
+async function saveUpMemo(memo){
+  var sk=document.getElementById('upSkip');if(sk)sk.innerHTML='';UPSKIP=null;
+  if(!memo||!memo.lines||!memo.lines.length||!sbReady())return '';
+  var first=clean(memo.lines[0]).trim().replace(/^\[(.*)\]$/,'$1').replace(/^【(.*)】$/,'$1').trim();
+  var title=(first.length<=40&&!/\d{1,2}\s*\/\s*\d{1,2}/.test(first))?first:(PJ[memo.p]||'팀')+' 업데이트 '+md(TISO);
+  var body=memo.lines.slice(title===first&&memo.lines.length>1?1:0);
+  var row={kind:'메모',cat:'참고',p:memo.p||'team',t:title,note:body.join('\n'),who:memo.who||null,
+           src:'가져오기 '+md(TISO)+(ME?' · '+ME:''),d:TISO,imp:false};
+  try{
+    var res=await SB.from('schedule').insert(nrow(row)).select('id');
+    if(res.error&&/\b(cat|src)\b/.test(res.error.message||'')){NO_NCOL=true;res=await SB.from('schedule').insert(nrow(row)).select('id')}
+    if(res.error)throw res.error;
+    await sbLoad();
+    return '일정이 아닌 '+memo.lines.length+'줄은 정리 보드에 메모 「'+title+'」로 저장했어요.';
+  }catch(e){setMsg(wErr(e),true);return ''}
 }
 var UPSTATS=null;
 function offerSkip(st){
@@ -1997,9 +2061,10 @@ function finishUp(ok2,fail,badN,bad){
   var st=UPSTATS||{};
   if(st.dups)m+=' / 같은 일정 '+st.dups+'건 합침';
   if(st.exist)m+=' / 이미 있는 일정 '+st.exist+'건 건너뜀';
-  if(st.skipped)m+=' / 날짜 없는 줄 '+st.skipped+'개 건너뜀';
-  offerSkip(st);
-  if(badN){m+=' / 확인이 필요한 '+badN+'줄은 아래 표에서 골라주세요 (날짜 없음·지난 날짜).';PREV=(bad||[]).map(function(r){r.inc=false;return r});renderPreview()}
+  var hadMemo=!!UPMEMO;
+  if(UPMEMO){m+=' / '+UPMEMO;UPMEMO=''}
+  else if(st.skipped)m+=' / 날짜 없는 줄 '+st.skipped+'개 건너뜀';
+  if(badN){m+=hadMemo?' 그중 일정으로도 올릴 게 있으면 아래 표에서 날짜를 넣어 고르세요 (안 해도 메모엔 남아 있어요).':' / 확인이 필요한 '+badN+'줄은 아래 표에서 골라주세요 (날짜 없음·지난 날짜).';PREV=(bad||[]).map(function(r){r.inc=false;return r});renderPreview()}
   setMsg(m,fail>0);
   var tb=document.querySelector('.tab[data-t=import]');if(tb)tb.focus();
 }
@@ -2018,9 +2083,11 @@ function loadUpFile(f){
 
 /* ── 설정: 팀원 · 반복 일정 (공유) ── */
 var SET={members:null,rhythms:null};
-function baseMembers(){return ['이채윤','이주희','김성현','김소연','허교범','김희연','김경은','김유현']}
+function baseMembers(){return ['이채윤','이주희','김성현','김소연','허교범','김희연','김경은','김유현','차소담']}
 function applySettings(){
+  /* 저장된 명단 + 기본 명단 합침 (새로 들어온 기본 멤버가 예전 저장본에 가려지지 않게) */
   MEMBERS=(SET.members&&SET.members.length)?SET.members.slice():baseMembers();
+  baseMembers().forEach(function(n){if(MEMBERS.indexOf(n)<0)MEMBERS.push(n)});
   var extra=(SET.rhythms||[]).map(function(r){
     return {days:r.days||[],p:r.p,k:r.k||'team',t:r.t,time:r.time||'',who:r.who||'',_custom:r.id};
   }).filter(function(r){return r.days.length&&r.t});
@@ -2882,7 +2949,7 @@ function dayTimeline(dt,items,now){
   var rows=MEMBERS.concat(['__NONE__']);
   var nowM=now?tmin(now)-H0*60:null;
   var PXM=Math.max(0.6,((window.innerWidth||1600)-118-230-70)/SPAN);
-  var body='',weights=[];
+  var body='',weights=[],mins=[];
   rows.forEach(function(who){
     var mine=items.filter(function(e){var ps=people(e);return who==='__NONE__'?!ps.length:ps.indexOf(who)>-1});
     var name=who==='__NONE__'?'미배정·팀 전체':who;
@@ -2916,6 +2983,7 @@ function dayTimeline(dt,items,now){
     });
     var nL=Math.max(1,lanes.length);
     weights.push(Math.max(1,nL,Math.ceil(untimed.length/2)));
+    mins.push(Math.max(untimed.length*25+8,nL*30));
     var h='';
     h+='<div class="tlane">';
     if(nowM!==null&&nowM>=0&&nowM<=SPAN)h+='<i class="tlnow" style="left:'+(nowM/SPAN*100)+'%"></i>';
@@ -2931,7 +2999,8 @@ function dayTimeline(dt,items,now){
     h+='</div>';
     body+=rowHead+h;
   });
-  var tpl=weights.map(function(w){return 'minmax(0,'+w+'fr)'}).join(' ');
+  /* 시간 미정 칸 카드가 잘리지 않게 줄마다 최소 높이 */
+  var tpl=weights.map(function(w,i){return 'minmax('+mins[i]+'px,'+w+'fr)'}).join(' ');
   var out='<div class="tl" style="grid-template-columns:118px 230px 1fr;grid-template-rows:auto '+tpl+'">'
     +'<div class="tlh"></div><div class="tlh">시간 미정</div><div class="tlh tlhours">'+hours.map(function(x){return '<span>'+x+'시</span>'}).join('')+'</div>'
     +body+'</div>';
@@ -3019,7 +3088,7 @@ function renderBoard(){
     var lx=N.x;
     g+='<g class="bnode bn-p'+(on?'':' dim')+(selKey===key?' sel':'')+(F&&F!==k?' dim':'')+'" data-bsel="'+key+'" tabindex="0" style="--c:var(--'+k+')">'
       +'<circle cx="'+N.x.toFixed(1)+'" cy="'+N.y.toFixed(1)+'" r="40"/>'
-      +'<text x="'+lx.toFixed(1)+'" y="'+(N.y-1).toFixed(1)+'">'+esc({hong:'홍춘욱',park:'박세익',nuri:'어스누리',kim:'김작가×빈센트',lee:'이정윤',ohjt:'오종태',team:'팀 공통'}[k]||PJ[k])+'</text>'
+      +'<text x="'+lx.toFixed(1)+'" y="'+(N.y-1).toFixed(1)+'">'+esc({hong:'홍춘욱',park:'박세익',nuri:'어스누리',kim:'김작가×빈센트',lee:'이정윤',ohjt:'오종태',yik:'김영익',team:'팀 공통'}[k]||PJ[k])+'</text>'
       +'<text class="pcnt" x="'+lx.toFixed(1)+'" y="'+(N.y+21).toFixed(1)+'">'+cnt+'</text></g>';
   });
   var labs=[];
@@ -3104,7 +3173,7 @@ function boardDetail(L,all,vis){
     if(n){
       h+='<div class="bdet" style="--c:var(--'+n.p+')"><div class="nc1"><span class="ncat cat-'+NCATS.indexOf(n.cat)+'">'+esc(n.cat)+'</span>'+(n.imp?'<b class="nimp">중요</b>':'')
         +'<span class="npj">'+esc(PJ[n.p]||'')+'</span></div><h3>'+esc(n.t)+'</h3>'
-        +(n.n?'<p>'+esc(n.n).replace(/ · /g,'<br>· ')+'</p>':'')
+        +(n.n?'<p>'+esc(n.n).replace(/\n/g,'<br>').replace(/ · /g,'<br>· ')+'</p>':'')
         +'<div class="nc4">'+esc([n.src,n.d?md(n.d):''].filter(Boolean).join(' · '))+'</div>'
         +(people(n).length?'<div class="bppl">'+people(n).map(function(m){return '<button class="chip" data-bsel="m:'+esc(m)+'">'+esc(m)+'</button>'}).join('')+'</div>':'')
         +'<div class="bact"><button class="pb sec2" data-ne="edit" data-id="'+esc(n.id)+'">수정</button><button class="pb sec2" data-ne="del" data-id="'+esc(n.id)+'">삭제</button></div></div>';

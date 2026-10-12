@@ -1,0 +1,10 @@
+config.py
+.env
+*.key
+*.pem
+session.session
+nohup.out
+__pycache__/
+static/uploads/
+*.sql
+*.png
