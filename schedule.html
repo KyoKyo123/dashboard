@@ -282,6 +282,7 @@ body.fit footer{display:none}
 .hd2{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .panel.scroll{overflow-y:auto}
 body.fit .panel{overflow:hidden}
+body.fit .panel.scroll{overflow-y:auto}   /* 목록·규칙·지난 일정·가져오기는 칸 안에서 스크롤 */
 body.fit .split2,body.fit .mfit,body.fit .yfit{overflow:hidden}
 
 /* 주간 가로 7열 */
@@ -2377,13 +2378,16 @@ function applyZoom(){
 /* 스크롤 가능한 칸 표시: 아래(옆)에 더 있으면 흐림 + 안내 */
 var SCROLL_SEL='.tlwrap,.wb7,.side,.bside,.pmw,.ygrid,.sigwrap,.gwrap,.mfit,.panel.scroll,.split2>*';
 function markScroll(){
+  if(!markScroll.w){markScroll.w=1;window.addEventListener('scroll',function(){clearTimeout(markScroll.t);markScroll.t=setTimeout(markScroll,60)},{passive:true})}
   var hints=document.getElementById('morehints');
   if(!hints){hints=document.createElement('div');hints.id='morehints';document.body.appendChild(hints)}
   var out='';
   [].slice.call(document.querySelectorAll(SCROLL_SEL)).forEach(function(el){
     if(!el.offsetParent)return;
     if(!el.__sw){el.__sw=1;el.addEventListener('scroll',function(){clearTimeout(markScroll.t);markScroll.t=setTimeout(markScroll,60)},{passive:true})}
-    var down=el.scrollHeight-el.clientHeight-el.scrollTop>4;
+    /* 실제로 스크롤되는 칸만 + 끝까지 내리면(남은 게 8px 이하) 표시 없앰 */
+    var oy=getComputedStyle(el).overflowY;
+    var down=(oy==='auto'||oy==='scroll')&&el.scrollHeight-el.clientHeight-el.scrollTop>8;
     el.classList.toggle('more-d',down);
     if(down&&el.clientHeight>120){
       var r=rc(el);
